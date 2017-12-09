@@ -2006,6 +2006,8 @@ struct ph7_class_method
 	sxi32 iFlags;        /* Methods configuration */
 	sxi32 iCloneDepth;   /* Clone depth [Only used by the magic method __clone ] */
     sxu32 nLine;         /* Line on which this method was defined */
+    sxu32 nType;         /* Return type expected by this method [ie: bool, int, float, etc...] */
+    SyString sClass;     /* Return class expected by this method */
 };
 /*
  * Each active object (class instance) is represented by an instance of 
@@ -49092,6 +49094,39 @@ static sxi32 GenStateCompileClassMethod(
 	}
 	/* Point beyond method signature */
 	pGen->pIn = &pEnd[1];
+	/* Check for method return type */
+    if( pGen->pIn->nType & PH7_TK_COLON){
+        pGen->pIn++;
+        if( pGen->pIn->nType & PH7_TK_KEYWORD ){
+            sxu32 nKey = (sxu32)(SX_PTR_TO_INT(pGen->pIn->pUserData));
+            if( nKey & PH7_TKWRD_ARRAY ){
+                pMeth->nType = MEMOBJ_HASHMAP;
+            }else if( nKey & PH7_TKWRD_BOOL ){
+                pMeth->nType = MEMOBJ_BOOL;
+            }else if( nKey & PH7_TKWRD_INT ){
+                pMeth->nType = MEMOBJ_INT;
+            }else if( nKey & PH7_TKWRD_STRING ){
+                pMeth->nType = MEMOBJ_STRING;
+            }else{
+                PH7_GenCompileError(&(*pGen),E_ERROR,pGen->pIn->nLine,
+                    "Invalid return type '%z'",
+                    &pGen->pIn->sData);
+            }
+            pGen->pIn++;
+        }else if( pGen->pIn->nType & PH7_TK_ID ){
+            SyString *sClass = &pGen->pIn->sData; /* Class name */
+            /* Return type must be a class instance, record that*/
+            char *zDup = SyMemBackendStrDup(&pGen->pVm->sAllocator,sClass->zString,sClass->nByte);
+            if( zDup ){
+                pMeth->nType = SXU32_HIGH; /* 0xFFFFFFFF as sentinel */
+                SyStringInitFromBuf(&pMeth->sClass,zDup,sClass->nByte);
+            }
+            pGen->pIn++;
+        }else{
+            PH7_GenCompileError(&(*pGen),E_ERROR,pGen->pIn->nLine,
+                "Undefined return type");
+        }
+    }
 	if( doBody ){
 		/* Compile method body */
 		rc = GenStateCompileFuncBody(&(*pGen),&pMeth->sFunc);
