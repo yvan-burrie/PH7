@@ -1966,6 +1966,7 @@ struct ph7_class
 #define PH7_CLASS_INTERFACE   0x002 /* Class is interface */
 #define PH7_CLASS_ABSTRACT    0x004 /* Class is abstract */
 #define PH7_CLASS_THROWABLE   0x010 /* Class is throwable */
+#define PH7_CLASS_ARRAYACCESS 0x020 /* Class is array-accessible */
 /* Class attribute/methods/constants protection levels */
 #define PH7_CLASS_PROT_PUBLIC     1 /* public */
 #define PH7_CLASS_PROT_PROTECTED  2 /* protected */
@@ -3748,6 +3749,11 @@ static sxi32 VmEvalChunk(ph7_vm *pVm,ph7_context *pCtx,SyString *pChunk,int iFla
  */
 #define PH7_BUILTIN_THROWABLE \
 	"interface Throwable {}"
+#define PH7_BUILTIN_ARRAYACCESS \
+	"interface ArrayAccess {"\
+	"public function offsetGet($o);"\
+	"public function offsetSet($o, $v);"\
+	"}"
 #define PH7_BUILTIN_LIB \
 	"class Exception implements Throwable { "\
     "protected $message = 'Unknown exception';"\
@@ -4175,6 +4181,11 @@ PH7_PRIVATE sxi32 PH7_VmInit(
 	VmEvalChunk(&(*pVm),0,&sBuiltin,PH7_PHP_ONLY,FALSE);
 	pClass = PH7_VmExtractClass(pVm,"Throwable",sizeof("Throwable")-1,0,0);
 	pClass->iFlags |= PH7_CLASS_THROWABLE;
+	/* Compile the ArrayAccess interface */
+	SyStringInitFromBuf(&sBuiltin,PH7_BUILTIN_ARRAYACCESS,sizeof(PH7_BUILTIN_ARRAYACCESS)-1);
+	VmEvalChunk(&(*pVm),0,&sBuiltin,PH7_PHP_ONLY,FALSE);
+	pClass = PH7_VmExtractClass(pVm,"ArrayAccess",sizeof("ArrayAccess")-1,0,0);
+	pClass->iFlags |= PH7_CLASS_ARRAYACCESS;
 	SyStringInitFromBuf(&sBuiltin,PH7_BUILTIN_LIB,sizeof(PH7_BUILTIN_LIB)-1);
 	/* Compile the built-in library */
 	VmEvalChunk(&(*pVm),0,&sBuiltin,PH7_PHP_ONLY,FALSE);
@@ -27899,6 +27910,9 @@ PH7_PRIVATE sxi32 PH7_ClassInherit(ph7_gen_state *pGen,ph7_class *pSub,ph7_class
 	if( pBase->iFlags & PH7_CLASS_THROWABLE ){
 		pSub->iFlags |= PH7_CLASS_THROWABLE;
 	}
+	if( pBase->iFlags & PH7_CLASS_ARRAYACCESS ){
+		pSub->iFlags |= PH7_CLASS_ARRAYACCESS;
+	}
 	/* Install in the derived hashtable */
 	rc = SyHashInsert(&pBase->hDerived,(const void *)SyStringData(&pSub->sName),SyStringLength(&pSub->sName),pSub);
 	if( rc != SXRET_OK ){
@@ -27991,6 +28005,9 @@ PH7_PRIVATE sxi32 PH7_ClassInterfaceInherit(ph7_class *pSub,ph7_class *pBase)
 	if( pBase->iFlags & PH7_CLASS_THROWABLE ){
 		pSub->iFlags |= PH7_CLASS_THROWABLE;
 	}
+	if( pBase->iFlags & PH7_CLASS_ARRAYACCESS ){
+		pSub->iFlags |= PH7_CLASS_ARRAYACCESS;
+	}
 	/* Install in the derived hashtable */
 	SyHashInsert(&pBase->hDerived,(const void *)SyStringData(&pSub->sName),SyStringLength(&pSub->sName),pSub);
 	SyHashResetLoopCursor(&pBase->hAttr);
@@ -28048,6 +28065,9 @@ PH7_PRIVATE sxi32 PH7_ClassImplement(ph7_class *pMain,ph7_class *pInterface)
 	/* Copy flags */
 	if( pInterface->iFlags & PH7_CLASS_THROWABLE ){
 		pMain->iFlags |= PH7_CLASS_THROWABLE;
+	}
+	if( pInterface->iFlags & PH7_CLASS_ARRAYACCESS ){
+		pMain->iFlags |= PH7_CLASS_ARRAYACCESS;
 	}
 	/* First off,copy all constants declared inside the interface */
 	SyHashResetLoopCursor(&pInterface->hAttr);
@@ -49458,7 +49478,10 @@ static sxi32 GenStateCompileClass(ph7_gen_state *pGen,sxi32 iFlags)
 					/* Error count limit reached,abort immediately */
 					return SXERR_ABORT;
 				}
-			}else{
+				if( pBase->iFlags & PH7_CLASS_ARRAYACCESS ){
+					/* Make sure it's flagged as array access */
+					pClass->iFlags |= PH7_CLASS_ARRAYACCESS;
+				}
 				if( pBase->iFlags & PH7_CLASS_FINAL ){
 					rc = PH7_GenCompileError(pGen,E_ERROR,nLine,
 						"Class '%z' may not inherit from final class '%z'",pName,&pBase->sName);
