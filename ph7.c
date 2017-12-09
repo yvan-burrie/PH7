@@ -1965,6 +1965,7 @@ struct ph7_class
 #define PH7_CLASS_FINAL       0x001 /* Class is final [cannot be extended] */
 #define PH7_CLASS_INTERFACE   0x002 /* Class is interface */
 #define PH7_CLASS_ABSTRACT    0x004 /* Class is abstract */
+#define PH7_CLASS_THROWABLE   0x010 /* Class is throwable */
 /* Class attribute/methods/constants protection levels */
 #define PH7_CLASS_PROT_PUBLIC     1 /* public */
 #define PH7_CLASS_PROT_PROTECTED  2 /* protected */
@@ -3743,8 +3744,10 @@ static sxi32 VmEvalChunk(ph7_vm *pVm,ph7_context *pCtx,SyString *pChunk,int iFla
  * Built-in classes/interfaces and some functions that cannot be implemented
  * directly as foreign functions.
  */
+#define PH7_BUILTIN_THROWABLE \
+	"interface Throwable {}"
 #define PH7_BUILTIN_LIB \
-	"class Exception { "\
+	"class Exception implements Throwable { "\
     "protected $message = 'Unknown exception';"\
     "protected $code = 0;"\
     "protected $file;"\
@@ -4164,6 +4167,12 @@ PH7_PRIVATE sxi32 PH7_VmInit(
 	}
 	/* VM correctly initialized,set the magic number */
 	pVm->nMagic = PH7_VM_INIT;
+	ph7_class *pClass;
+	/* Compile the Throwable interface */
+	SyStringInitFromBuf(&sBuiltin,PH7_BUILTIN_THROWABLE,sizeof(PH7_BUILTIN_THROWABLE)-1);
+	VmEvalChunk(&(*pVm),0,&sBuiltin,PH7_PHP_ONLY,FALSE);
+	pClass = PH7_VmExtractClass(pVm,"Throwable",sizeof("Throwable")-1,0,0);
+	pClass->iFlags |= PH7_CLASS_THROWABLE;
 	SyStringInitFromBuf(&sBuiltin,PH7_BUILTIN_LIB,sizeof(PH7_BUILTIN_LIB)-1);
 	/* Compile the built-in library */
 	VmEvalChunk(&(*pVm),0,&sBuiltin,PH7_PHP_ONLY,FALSE);
@@ -7445,9 +7454,7 @@ case PH7_OP_THROW: {
 		ph7_class_instance *pThis = (ph7_class_instance *)pTos->x.pOther;
 		ph7_class *pException;
 		/* Make sure the loaded object is an instance of the 'Exception' base class.
-		 */
-		pException = PH7_VmExtractClass(&(*pVm),"Exception",sizeof("Exception")-1,TRUE,0);
-		if( pException == 0 || !VmInstanceOf(pThis->pClass,pException) ){
+		if( (pThis->pClass->iFlags & PH7_CLASS_THROWABLE) == 0 ){
 			/* Exceptions must be valid objects derived from the Exception base class */
 			rc = VmUncaughtException(&(*pVm),pThis);
 			if( rc == SXERR_ABORT ){
@@ -27886,6 +27893,10 @@ PH7_PRIVATE sxi32 PH7_ClassInherit(ph7_gen_state *pGen,ph7_class *pSub,ph7_class
 	SyHashEntry *pEntry;
 	SyString *pName;
 	sxi32 rc;
+	/* Copy flags */
+	if( pBase->iFlags & PH7_CLASS_THROWABLE ){
+		pSub->iFlags |= PH7_CLASS_THROWABLE;
+	}
 	/* Install in the derived hashtable */
 	rc = SyHashInsert(&pBase->hDerived,(const void *)SyStringData(&pSub->sName),SyStringLength(&pSub->sName),pSub);
 	if( rc != SXRET_OK ){
@@ -27974,6 +27985,10 @@ PH7_PRIVATE sxi32 PH7_ClassInterfaceInherit(ph7_class *pSub,ph7_class *pBase)
 	SyHashEntry *pEntry;
 	SyString *pName;
 	sxi32 rc;
+	/* Copy flags */
+	if( pBase->iFlags & PH7_CLASS_THROWABLE ){
+		pSub->iFlags |= PH7_CLASS_THROWABLE;
+	}
 	/* Install in the derived hashtable */
 	SyHashInsert(&pBase->hDerived,(const void *)SyStringData(&pSub->sName),SyStringLength(&pSub->sName),pSub);
 	SyHashResetLoopCursor(&pBase->hAttr);
@@ -28028,6 +28043,10 @@ PH7_PRIVATE sxi32 PH7_ClassImplement(ph7_class *pMain,ph7_class *pInterface)
 	SyHashEntry *pEntry;
 	SyString *pName;
 	sxi32 rc;
+	/* Copy flags */
+	if( pInterface->iFlags & PH7_CLASS_THROWABLE ){
+		pMain->iFlags |= PH7_CLASS_THROWABLE;
+	}
 	/* First off,copy all constants declared inside the interface */
 	SyHashResetLoopCursor(&pInterface->hAttr);
 	while((pEntry = SyHashGetNextEntry(&pInterface->hAttr)) != 0 ){
