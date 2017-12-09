@@ -1,6 +1,6 @@
 /*
  * Symisc PH7: An embeddable bytecode compiler and a virtual machine for the PHP(5) programming language.
- * Copyright (C) 2011-2017 Symisc Systems http://ph7.symisc.net/
+ * Copyright (C) 2011-2018 Symisc Systems http://ph7.symisc.net/
  * Version 2.1.4
  * For information on licensing,redistribution of this file,and for a DISCLAIMER OF ALL WARRANTIES
  * please contact Symisc Systems via:
@@ -11,7 +11,7 @@
  *      http://ph7.symisc.net/
  */
 /*
- * Copyright (C) 2011-2017 Symisc Systems. All rights reserved.
+ * Copyright (C) 2011-2018 Symisc Systems. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -62042,7 +62042,7 @@ int ph7_value_is_empty(ph7_value *pVal)
 /* END-OF-IMPLEMENTATION: ph7@embedded@symisc 345-09-46 */
 /*
  * Symisc PH7: An embeddable bytecode compiler and a virtual machine for the PHP(5) programming language.
- * Copyright (C) 2011-2017,Symisc Systems http://ph7.symisc.net/
+ * Copyright (C) 2011-2018,Symisc Systems http://ph7.symisc.net/
  * Version 2.1.4
  * For information on licensing,redistribution of this file,and for a DISCLAIMER OF ALL WARRANTIES
  * please contact Symisc Systems via:
@@ -62053,7 +62053,7 @@ int ph7_value_is_empty(ph7_value *pVal)
  *      http://ph7.symisc.net/
  */
 /*
- * Copyright (C) 2011-2017 Symisc Systems. All rights reserved.
+ * Copyright (C) 2011-2018 Symisc Systems. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
