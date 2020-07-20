@@ -10,8 +10,8 @@ include_directories("${CMAKE_CURRENT_LIST_DIR}/inc")
 target_sources(
     ph7
     PRIVATE
-    "${CMAKE_CURRENT_LIST_DIR}/inc/ph7/ph7.h"
-    "${CMAKE_CURRENT_LIST_DIR}/src/ph7/ph7.c"
+    "${CMAKE_CURRENT_LIST_DIR}/inc/ph7/ph7-amalg.h"
+    "${CMAKE_CURRENT_LIST_DIR}/src/ph7/ph7-amalg.c"
 )
 
 add_executable(ph7-test "${CMAKE_CURRENT_LIST_DIR}/tests/main.c")
