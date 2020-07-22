@@ -56,13 +56,15 @@
  */
 static int PH7_builtin_is_bool(ph7_context* pCtx, int nArg, ph7_value** apArg)
 {
-    int res = 0; /* Assume false by default */
+    // Assume false by default
+    int res = 0;
     if (nArg > 0)
     {
         res = ph7_value_is_bool(apArg[0]);
     }
     /* Query result */
     ph7_result_bool(pCtx, res);
+
     return PH7_OK;
 }
 
@@ -78,13 +80,15 @@ static int PH7_builtin_is_bool(ph7_context* pCtx, int nArg, ph7_value** apArg)
  */
 static int PH7_builtin_is_float(ph7_context* pCtx, int nArg, ph7_value** apArg)
 {
-    int res = 0; /* Assume false by default */
+    // Assume false by default
+    int res = 0;
     if (nArg > 0)
     {
         res = ph7_value_is_float(apArg[0]);
     }
     /* Query result */
     ph7_result_bool(pCtx, res);
+
     return PH7_OK;
 }
 
@@ -100,13 +104,15 @@ static int PH7_builtin_is_float(ph7_context* pCtx, int nArg, ph7_value** apArg)
  */
 static int PH7_builtin_is_int(ph7_context* pCtx, int nArg, ph7_value** apArg)
 {
-    int res = 0; /* Assume false by default */
+    // Assume false by default
+    int res = 0;
     if (nArg > 0)
     {
         res = ph7_value_is_int(apArg[0]);
     }
     /* Query result */
     ph7_result_bool(pCtx, res);
+
     return PH7_OK;
 }
 
@@ -120,13 +126,15 @@ static int PH7_builtin_is_int(ph7_context* pCtx, int nArg, ph7_value** apArg)
  */
 static int PH7_builtin_is_string(ph7_context* pCtx, int nArg, ph7_value** apArg)
 {
-    int res = 0; /* Assume false by default */
+    // Assume false by default
+    int res = 0;
     if (nArg > 0)
     {
         res = ph7_value_is_string(apArg[0]);
     }
     /* Query result */
     ph7_result_bool(pCtx, res);
+
     return PH7_OK;
 }
 
@@ -140,13 +148,15 @@ static int PH7_builtin_is_string(ph7_context* pCtx, int nArg, ph7_value** apArg)
  */
 static int PH7_builtin_is_null(ph7_context* pCtx, int nArg, ph7_value** apArg)
 {
-    int res = 0; /* Assume false by default */
+    // Assume false by default
+    int res = 0;
     if (nArg > 0)
     {
         res = ph7_value_is_null(apArg[0]);
     }
     /* Query result */
     ph7_result_bool(pCtx, res);
+
     return PH7_OK;
 }
 
@@ -160,13 +170,15 @@ static int PH7_builtin_is_null(ph7_context* pCtx, int nArg, ph7_value** apArg)
  */
 static int PH7_builtin_is_numeric(ph7_context* pCtx, int nArg, ph7_value** apArg)
 {
-    int res = 0; /* Assume false by default */
+    // Assume false by default
+    int res = 0;
     if (nArg > 0)
     {
         res = ph7_value_is_numeric(apArg[0]);
     }
     /* Query result */
     ph7_result_bool(pCtx, res);
+
     return PH7_OK;
 }
 
@@ -180,13 +192,15 @@ static int PH7_builtin_is_numeric(ph7_context* pCtx, int nArg, ph7_value** apArg
  */
 static int PH7_builtin_is_scalar(ph7_context* pCtx, int nArg, ph7_value** apArg)
 {
-    int res = 0; /* Assume false by default */
+    // Assume false by default
+    int res = 0;
     if (nArg > 0)
     {
         res = ph7_value_is_scalar(apArg[0]);
     }
     /* Query result */
     ph7_result_bool(pCtx, res);
+
     return PH7_OK;
 }
 
@@ -200,13 +214,15 @@ static int PH7_builtin_is_scalar(ph7_context* pCtx, int nArg, ph7_value** apArg)
  */
 static int PH7_builtin_is_array(ph7_context* pCtx, int nArg, ph7_value** apArg)
 {
-    int res = 0; /* Assume false by default */
+    // Assume false by default
+    int res = 0;
     if (nArg > 0)
     {
         res = ph7_value_is_array(apArg[0]);
     }
     /* Query result */
     ph7_result_bool(pCtx, res);
+
     return PH7_OK;
 }
 
@@ -220,13 +236,15 @@ static int PH7_builtin_is_array(ph7_context* pCtx, int nArg, ph7_value** apArg)
  */
 static int PH7_builtin_is_object(ph7_context* pCtx, int nArg, ph7_value** apArg)
 {
-    int res = 0; /* Assume false by default */
+    // Assume false by default
+    int res = 0;
     if (nArg > 0)
     {
         res = ph7_value_is_object(apArg[0]);
     }
     /* Query result */
     ph7_result_bool(pCtx, res);
+
     return PH7_OK;
 }
 
@@ -240,12 +258,14 @@ static int PH7_builtin_is_object(ph7_context* pCtx, int nArg, ph7_value** apArg)
  */
 static int PH7_builtin_is_resource(ph7_context* pCtx, int nArg, ph7_value** apArg)
 {
-    int res = 0; /* Assume false by default */
+    // Assume false by default
+    int res = 0;
     if (nArg > 0)
     {
         res = ph7_value_is_resource(apArg[0]);
     }
     ph7_result_bool(pCtx, res);
+
     return PH7_OK;
 }
 
@@ -261,7 +281,6 @@ static int PH7_builtin_floatval(ph7_context* pCtx, int nArg, ph7_value** apArg)
 {
     if (nArg < 1)
     {
-        /* return 0.0 */
         ph7_result_double(pCtx, 0);
     }
     else
@@ -271,6 +290,7 @@ static int PH7_builtin_floatval(ph7_context* pCtx, int nArg, ph7_value** apArg)
         dval = ph7_value_to_double(apArg[0]);
         ph7_result_double(pCtx, dval);
     }
+
     return PH7_OK;
 }
 
@@ -286,7 +306,6 @@ static int PH7_builtin_intval(ph7_context* pCtx, int nArg, ph7_value** apArg)
 {
     if (nArg < 1)
     {
-        /* return 0 */
         ph7_result_int(pCtx, 0);
     }
     else
@@ -296,6 +315,7 @@ static int PH7_builtin_intval(ph7_context* pCtx, int nArg, ph7_value** apArg)
         iVal = ph7_value_to_int64(apArg[0]);
         ph7_result_int64(pCtx, iVal);
     }
+
     return PH7_OK;
 }
 
@@ -311,7 +331,6 @@ static int PH7_builtin_strval(ph7_context* pCtx, int nArg, ph7_value** apArg)
 {
     if (nArg < 1)
     {
-        /* return NULL */
         ph7_result_null(pCtx);
     }
     else
@@ -322,6 +341,7 @@ static int PH7_builtin_strval(ph7_context* pCtx, int nArg, ph7_value** apArg)
         zVal = ph7_value_to_string(apArg[0], &iLen);
         ph7_result_string(pCtx, zVal, iLen);
     }
+
     return PH7_OK;
 }
 
@@ -341,23 +361,25 @@ static int PH7_builtin_empty(ph7_context* pCtx, int nArg, ph7_value** apArg)
         res = ph7_value_is_empty(apArg[0]);
     }
     ph7_result_bool(pCtx, res);
+
     return PH7_OK;
 
 }
 
 #ifndef PH7_DISABLE_BUILTIN_FUNC
 #ifdef PH7_ENABLE_MATH_FUNC
-                                                                                                                        /*
- * Section:
- *    Math Functions.
- * Authors:
- *    Symisc Systems,devel@symisc.net.
- *    Copyright (C) Symisc Systems,http://ph7.symisc.net
- * Status:
- *    Stable.
- */
+/*
+* Section:
+*    Math Functions.
+* Authors:
+*    Symisc Systems,devel@symisc.net.
+*    Copyright (C) Symisc Systems,http://ph7.symisc.net
+* Status:
+*    Stable.
+*/
 #include <stdlib.h> /* abs */
 #include <math.h>
+
 /*
  * float sqrt(float $arg )
  *  Square root of the given number.
@@ -366,21 +388,24 @@ static int PH7_builtin_empty(ph7_context* pCtx, int nArg, ph7_value** apArg)
  * Return
  *  The square root of arg or the special value Nan of failure.
  */
-static int PH7_builtin_sqrt(ph7_context *pCtx,int nArg,ph7_value **apArg)
+static int PH7_builtin_sqrt(ph7_context* pCtx, int nArg, ph7_value** apArg)
 {
-    double r,x;
-    if( nArg < 1 ){
-        /* Missing argument,return 0 */
-        ph7_result_int(pCtx,0);
+    double r, x;
+    if (nArg < 1)
+    {
+        ph7_result_int(pCtx, 0);
+
         return PH7_OK;
     }
     x = ph7_value_to_double(apArg[0]);
     /* Perform the requested operation */
     r = sqrt(x);
     /* store the result back */
-    ph7_result_double(pCtx,r);
+    ph7_result_double(pCtx, r);
+
     return PH7_OK;
 }
+
 /*
  * float exp(float $arg )
  *  Calculates the exponent of e.
@@ -389,21 +414,24 @@ static int PH7_builtin_sqrt(ph7_context *pCtx,int nArg,ph7_value **apArg)
  * Return
  *  'e' raised to the power of arg.
  */
-static int PH7_builtin_exp(ph7_context *pCtx,int nArg,ph7_value **apArg)
+static int PH7_builtin_exp(ph7_context* pCtx, int nArg, ph7_value** apArg)
 {
-    double r,x;
-    if( nArg < 1 ){
-        /* Missing argument,return 0 */
-        ph7_result_int(pCtx,0);
+    double r, x;
+    if (nArg < 1)
+    {
+        ph7_result_int(pCtx, 0);
+
         return PH7_OK;
     }
     x = ph7_value_to_double(apArg[0]);
     /* Perform the requested operation */
     r = exp(x);
     /* store the result back */
-    ph7_result_double(pCtx,r);
+    ph7_result_double(pCtx, r);
+
     return PH7_OK;
 }
+
 /*
  * float floor(float $arg )
  *  Round fractions down.
@@ -412,21 +440,24 @@ static int PH7_builtin_exp(ph7_context *pCtx,int nArg,ph7_value **apArg)
  * Return
  *  Returns the next lowest integer value by rounding down value if necessary.
  */
-static int PH7_builtin_floor(ph7_context *pCtx,int nArg,ph7_value **apArg)
+static int PH7_builtin_floor(ph7_context* pCtx, int nArg, ph7_value** apArg)
 {
-    double r,x;
-    if( nArg < 1 ){
-        /* Missing argument,return 0 */
-        ph7_result_int(pCtx,0);
+    double r, x;
+    if (nArg < 1)
+    {
+        ph7_result_int(pCtx, 0);
+
         return PH7_OK;
     }
     x = ph7_value_to_double(apArg[0]);
     /* Perform the requested operation */
     r = floor(x);
     /* store the result back */
-    ph7_result_double(pCtx,r);
+    ph7_result_double(pCtx, r);
+
     return PH7_OK;
 }
+
 /*
  * float cos(float $arg )
  *  Cosine.
@@ -435,21 +466,24 @@ static int PH7_builtin_floor(ph7_context *pCtx,int nArg,ph7_value **apArg)
  * Return
  *  The cosine of arg.
  */
-static int PH7_builtin_cos(ph7_context *pCtx,int nArg,ph7_value **apArg)
+static int PH7_builtin_cos(ph7_context* pCtx, int nArg, ph7_value** apArg)
 {
-    double r,x;
-    if( nArg < 1 ){
-        /* Missing argument,return 0 */
-        ph7_result_int(pCtx,0);
+    double r, x;
+    if (nArg < 1)
+    {
+        ph7_result_int(pCtx, 0);
+
         return PH7_OK;
     }
     x = ph7_value_to_double(apArg[0]);
     /* Perform the requested operation */
     r = cos(x);
     /* store the result back */
-    ph7_result_double(pCtx,r);
+    ph7_result_double(pCtx, r);
+
     return PH7_OK;
 }
+
 /*
  * float acos(float $arg )
  *  Arc cosine.
@@ -458,21 +492,24 @@ static int PH7_builtin_cos(ph7_context *pCtx,int nArg,ph7_value **apArg)
  * Return
  *  The arc cosine of arg.
  */
-static int PH7_builtin_acos(ph7_context *pCtx,int nArg,ph7_value **apArg)
+static int PH7_builtin_acos(ph7_context* pCtx, int nArg, ph7_value** apArg)
 {
-    double r,x;
-    if( nArg < 1 ){
-        /* Missing argument,return 0 */
-        ph7_result_int(pCtx,0);
+    double r, x;
+    if (nArg < 1)
+    {
+        ph7_result_int(pCtx, 0);
+
         return PH7_OK;
     }
     x = ph7_value_to_double(apArg[0]);
     /* Perform the requested operation */
     r = acos(x);
     /* store the result back */
-    ph7_result_double(pCtx,r);
+    ph7_result_double(pCtx, r);
+
     return PH7_OK;
 }
+
 /*
  * float cosh(float $arg )
  *  Hyperbolic cosine.
@@ -481,21 +518,24 @@ static int PH7_builtin_acos(ph7_context *pCtx,int nArg,ph7_value **apArg)
  * Return
  *  The hyperbolic cosine of arg.
  */
-static int PH7_builtin_cosh(ph7_context *pCtx,int nArg,ph7_value **apArg)
+static int PH7_builtin_cosh(ph7_context* pCtx, int nArg, ph7_value** apArg)
 {
-    double r,x;
-    if( nArg < 1 ){
-        /* Missing argument,return 0 */
-        ph7_result_int(pCtx,0);
+    double r, x;
+    if (nArg < 1)
+    {
+        ph7_result_int(pCtx, 0);
+
         return PH7_OK;
     }
     x = ph7_value_to_double(apArg[0]);
     /* Perform the requested operation */
     r = cosh(x);
     /* store the result back */
-    ph7_result_double(pCtx,r);
+    ph7_result_double(pCtx, r);
+
     return PH7_OK;
 }
+
 /*
  * float sin(float $arg )
  *  Sine.
@@ -504,21 +544,24 @@ static int PH7_builtin_cosh(ph7_context *pCtx,int nArg,ph7_value **apArg)
  * Return
  *  The sine of arg.
  */
-static int PH7_builtin_sin(ph7_context *pCtx,int nArg,ph7_value **apArg)
+static int PH7_builtin_sin(ph7_context* pCtx, int nArg, ph7_value** apArg)
 {
-    double r,x;
-    if( nArg < 1 ){
-        /* Missing argument,return 0 */
-        ph7_result_int(pCtx,0);
+    double r, x;
+    if (nArg < 1)
+    {
+        ph7_result_int(pCtx, 0);
+
         return PH7_OK;
     }
     x = ph7_value_to_double(apArg[0]);
     /* Perform the requested operation */
     r = sin(x);
     /* store the result back */
-    ph7_result_double(pCtx,r);
+    ph7_result_double(pCtx, r);
+
     return PH7_OK;
 }
+
 /*
  * float asin(float $arg )
  *  Arc sine.
@@ -527,21 +570,24 @@ static int PH7_builtin_sin(ph7_context *pCtx,int nArg,ph7_value **apArg)
  * Return
  *  The arc sine of arg.
  */
-static int PH7_builtin_asin(ph7_context *pCtx,int nArg,ph7_value **apArg)
+static int PH7_builtin_asin(ph7_context* pCtx, int nArg, ph7_value** apArg)
 {
-    double r,x;
-    if( nArg < 1 ){
-        /* Missing argument,return 0 */
-        ph7_result_int(pCtx,0);
+    double r, x;
+    if (nArg < 1)
+    {
+        ph7_result_int(pCtx, 0);
+
         return PH7_OK;
     }
     x = ph7_value_to_double(apArg[0]);
     /* Perform the requested operation */
     r = asin(x);
     /* store the result back */
-    ph7_result_double(pCtx,r);
+    ph7_result_double(pCtx, r);
+
     return PH7_OK;
 }
+
 /*
  * float sinh(float $arg )
  *  Hyperbolic sine.
@@ -550,21 +596,24 @@ static int PH7_builtin_asin(ph7_context *pCtx,int nArg,ph7_value **apArg)
  * Return
  *  The hyperbolic sine of arg.
  */
-static int PH7_builtin_sinh(ph7_context *pCtx,int nArg,ph7_value **apArg)
+static int PH7_builtin_sinh(ph7_context* pCtx, int nArg, ph7_value** apArg)
 {
-    double r,x;
-    if( nArg < 1 ){
-        /* Missing argument,return 0 */
-        ph7_result_int(pCtx,0);
+    double r, x;
+    if (nArg < 1)
+    {
+        ph7_result_int(pCtx, 0);
+
         return PH7_OK;
     }
     x = ph7_value_to_double(apArg[0]);
     /* Perform the requested operation */
     r = sinh(x);
     /* store the result back */
-    ph7_result_double(pCtx,r);
+    ph7_result_double(pCtx, r);
+
     return PH7_OK;
 }
+
 /*
  * float ceil(float $arg )
  *  Round fractions up.
@@ -573,21 +622,24 @@ static int PH7_builtin_sinh(ph7_context *pCtx,int nArg,ph7_value **apArg)
  * Return
  *  The next highest integer value by rounding up value if necessary.
  */
-static int PH7_builtin_ceil(ph7_context *pCtx,int nArg,ph7_value **apArg)
+static int PH7_builtin_ceil(ph7_context* pCtx, int nArg, ph7_value** apArg)
 {
-    double r,x;
-    if( nArg < 1 ){
-        /* Missing argument,return 0 */
-        ph7_result_int(pCtx,0);
+    double r, x;
+    if (nArg < 1)
+    {
+        ph7_result_int(pCtx, 0);
+
         return PH7_OK;
     }
     x = ph7_value_to_double(apArg[0]);
     /* Perform the requested operation */
     r = ceil(x);
     /* store the result back */
-    ph7_result_double(pCtx,r);
+    ph7_result_double(pCtx, r);
+
     return PH7_OK;
 }
+
 /*
  * float tan(float $arg )
  *  Tangent.
@@ -596,21 +648,24 @@ static int PH7_builtin_ceil(ph7_context *pCtx,int nArg,ph7_value **apArg)
  * Return
  *  The tangent of arg.
  */
-static int PH7_builtin_tan(ph7_context *pCtx,int nArg,ph7_value **apArg)
+static int PH7_builtin_tan(ph7_context* pCtx, int nArg, ph7_value** apArg)
 {
-    double r,x;
-    if( nArg < 1 ){
-        /* Missing argument,return 0 */
-        ph7_result_int(pCtx,0);
+    double r, x;
+    if (nArg < 1)
+    {
+        ph7_result_int(pCtx, 0);
+
         return PH7_OK;
     }
     x = ph7_value_to_double(apArg[0]);
     /* Perform the requested operation */
     r = tan(x);
     /* store the result back */
-    ph7_result_double(pCtx,r);
+    ph7_result_double(pCtx, r);
+
     return PH7_OK;
 }
+
 /*
  * float atan(float $arg )
  *  Arc tangent.
@@ -619,21 +674,24 @@ static int PH7_builtin_tan(ph7_context *pCtx,int nArg,ph7_value **apArg)
  * Return
  *  The arc tangent of arg.
  */
-static int PH7_builtin_atan(ph7_context *pCtx,int nArg,ph7_value **apArg)
+static int PH7_builtin_atan(ph7_context* pCtx, int nArg, ph7_value** apArg)
 {
-    double r,x;
-    if( nArg < 1 ){
-        /* Missing argument,return 0 */
-        ph7_result_int(pCtx,0);
+    double r, x;
+    if (nArg < 1)
+    {
+        ph7_result_int(pCtx, 0);
+
         return PH7_OK;
     }
     x = ph7_value_to_double(apArg[0]);
     /* Perform the requested operation */
     r = atan(x);
     /* store the result back */
-    ph7_result_double(pCtx,r);
+    ph7_result_double(pCtx, r);
+
     return PH7_OK;
 }
+
 /*
  * float tanh(float $arg )
  *  Hyperbolic tangent.
@@ -642,21 +700,24 @@ static int PH7_builtin_atan(ph7_context *pCtx,int nArg,ph7_value **apArg)
  * Return
  *  The Hyperbolic tangent of arg.
  */
-static int PH7_builtin_tanh(ph7_context *pCtx,int nArg,ph7_value **apArg)
+static int PH7_builtin_tanh(ph7_context* pCtx, int nArg, ph7_value** apArg)
 {
-    double r,x;
-    if( nArg < 1 ){
-        /* Missing argument,return 0 */
-        ph7_result_int(pCtx,0);
+    double r, x;
+    if (nArg < 1)
+    {
+        ph7_result_int(pCtx, 0);
+
         return PH7_OK;
     }
     x = ph7_value_to_double(apArg[0]);
     /* Perform the requested operation */
     r = tanh(x);
     /* store the result back */
-    ph7_result_double(pCtx,r);
+    ph7_result_double(pCtx, r);
+
     return PH7_OK;
 }
+
 /*
  * float atan2(float $y,float $x)
  *  Arc tangent of two variable.
@@ -666,22 +727,25 @@ static int PH7_builtin_tanh(ph7_context *pCtx,int nArg,ph7_value **apArg)
  * Return
  *  The arc tangent of y/x in radian.
  */
-static int PH7_builtin_atan2(ph7_context *pCtx,int nArg,ph7_value **apArg)
+static int PH7_builtin_atan2(ph7_context* pCtx, int nArg, ph7_value** apArg)
 {
-    double r,x,y;
-    if( nArg < 2 ){
-        /* Missing arguments,return 0 */
-        ph7_result_int(pCtx,0);
+    double r, x, y;
+    if (nArg < 2)
+    {
+        ph7_result_int(pCtx, 0);
+
         return PH7_OK;
     }
     y = ph7_value_to_double(apArg[0]);
     x = ph7_value_to_double(apArg[1]);
     /* Perform the requested operation */
-    r = atan2(y,x);
+    r = atan2(y, x);
     /* store the result back */
-    ph7_result_double(pCtx,r);
+    ph7_result_double(pCtx, r);
+
     return PH7_OK;
 }
+
 /*
  * float/int64 abs(float/int64 $arg )
  *  Absolute value.
@@ -690,30 +754,36 @@ static int PH7_builtin_atan2(ph7_context *pCtx,int nArg,ph7_value **apArg)
  * Return
  *  The absolute value of number.
  */
-static int PH7_builtin_abs(ph7_context *pCtx,int nArg,ph7_value **apArg)
+static int PH7_builtin_abs(ph7_context* pCtx, int nArg, ph7_value** apArg)
 {
     int is_float;
-    if( nArg < 1 ){
-        /* Missing argument,return 0 */
-        ph7_result_int(pCtx,0);
+    if (nArg < 1)
+    {
+        ph7_result_int(pCtx, 0);
+
         return PH7_OK;
     }
     is_float = ph7_value_is_float(apArg[0]);
-    if( is_float ){
-        double r,x;
+    if (is_float)
+    {
+        double r, x;
         x = ph7_value_to_double(apArg[0]);
         /* Perform the requested operation */
         r = fabs(x);
-        ph7_result_double(pCtx,r);
-    }else{
-        int r,x;
+        ph7_result_double(pCtx, r);
+    }
+    else
+    {
+        int r, x;
         x = ph7_value_to_int(apArg[0]);
         /* Perform the requested operation */
         r = abs(x);
-        ph7_result_int(pCtx,r);
+        ph7_result_int(pCtx, r);
     }
+
     return PH7_OK;
 }
+
 /*
  * float log(float $arg,[int/float $base])
  *  Natural logarithm.
@@ -725,26 +795,32 @@ static int PH7_builtin_abs(ph7_context *pCtx,int nArg,ph7_value **apArg)
  * Note:
  *  only Natural log and base-10 log are supported.
  */
-static int PH7_builtin_log(ph7_context *pCtx,int nArg,ph7_value **apArg)
+static int PH7_builtin_log(ph7_context* pCtx, int nArg, ph7_value** apArg)
 {
-    double r,x;
-    if( nArg < 1 ){
-        /* Missing argument,return 0 */
-        ph7_result_int(pCtx,0);
+    double r, x;
+    if (nArg < 1)
+    {
+        ph7_result_int(pCtx, 0);
+
         return PH7_OK;
     }
     x = ph7_value_to_double(apArg[0]);
     /* Perform the requested operation */
-    if( nArg == 2 && ph7_value_is_numeric(apArg[1]) && ph7_value_to_int(apArg[1]) == 10 ){
+    if (nArg == 2 && ph7_value_is_numeric(apArg[1]) && ph7_value_to_int(apArg[1]) == 10)
+    {
         /* Base-10 log */
         r = log10(x);
-    }else{
+    }
+    else
+    {
         r = log(x);
     }
     /* store the result back */
-    ph7_result_double(pCtx,r);
+    ph7_result_double(pCtx, r);
+
     return PH7_OK;
 }
+
 /*
  * float log10(float $arg )
  *  Base-10 logarithm.
@@ -753,21 +829,24 @@ static int PH7_builtin_log(ph7_context *pCtx,int nArg,ph7_value **apArg)
  * Return
  *  The Base-10 logarithm of the given number.
  */
-static int PH7_builtin_log10(ph7_context *pCtx,int nArg,ph7_value **apArg)
+static int PH7_builtin_log10(ph7_context* pCtx, int nArg, ph7_value** apArg)
 {
-    double r,x;
-    if( nArg < 1 ){
-        /* Missing argument,return 0 */
-        ph7_result_int(pCtx,0);
+    double r, x;
+    if (nArg < 1)
+    {
+        ph7_result_int(pCtx, 0);
+
         return PH7_OK;
     }
     x = ph7_value_to_double(apArg[0]);
     /* Perform the requested operation */
     r = log10(x);
     /* store the result back */
-    ph7_result_double(pCtx,r);
+    ph7_result_double(pCtx, r);
+
     return PH7_OK;
 }
+
 /*
  * number pow(number $base,number $exp)
  *  Exponential expression.
@@ -781,21 +860,24 @@ static int PH7_builtin_log10(ph7_context *pCtx,int nArg,ph7_value **apArg)
  *  If the result can be represented as integer it will be returned
  *  as type integer, else it will be returned as type float.
  */
-static int PH7_builtin_pow(ph7_context *pCtx,int nArg,ph7_value **apArg)
+static int PH7_builtin_pow(ph7_context* pCtx, int nArg, ph7_value** apArg)
 {
-    double r,x,y;
-    if( nArg < 1 ){
-        /* Missing argument,return 0 */
-        ph7_result_int(pCtx,0);
+    double r, x, y;
+    if (nArg < 1)
+    {
+        ph7_result_int(pCtx, 0);
+
         return PH7_OK;
     }
     x = ph7_value_to_double(apArg[0]);
     y = ph7_value_to_double(apArg[1]);
     /* Perform the requested operation */
-    r = pow(x,y);
-    ph7_result_double(pCtx,r);
+    r = pow(x, y);
+    ph7_result_double(pCtx, r);
+
     return PH7_OK;
 }
+
 /*
  * float pi(void)
  *  Returns an approximation of pi.
@@ -804,13 +886,15 @@ static int PH7_builtin_pow(ph7_context *pCtx,int nArg,ph7_value **apArg)
  * Return
  *  The value of pi as float.
  */
-static int PH7_builtin_pi(ph7_context *pCtx,int nArg,ph7_value **apArg)
+static int PH7_builtin_pi(ph7_context* pCtx, int nArg, ph7_value** apArg)
 {
     SXUNUSED(nArg); /* cc warning */
     SXUNUSED(apArg);
-    ph7_result_double(pCtx,PH7_PI);
+    ph7_result_double(pCtx, PH7_PI);
+
     return PH7_OK;
 }
+
 /*
  * float fmod(float $x,float $y)
  *  Returns the floating point remainder (modulo) of the division of the arguments.
@@ -822,23 +906,27 @@ static int PH7_builtin_pi(ph7_context *pCtx,int nArg,ph7_value **apArg)
  * Return
  *  The floating point remainder of x/y.
  */
-static int PH7_builtin_fmod(ph7_context *pCtx,int nArg,ph7_value **apArg)
+static int PH7_builtin_fmod(ph7_context* pCtx, int nArg, ph7_value** apArg)
 {
-    double x,y,r;
-    if( nArg < 2 ){
+    double x, y, r;
+    if (nArg < 2)
+    {
         /* Missing arguments */
-        ph7_result_double(pCtx,0);
+        ph7_result_double(pCtx, 0);
+
         return PH7_OK;
     }
     /* Extract given arguments */
     x = ph7_value_to_double(apArg[0]);
     y = ph7_value_to_double(apArg[1]);
     /* Perform the requested operation */
-    r = fmod(x,y);
+    r = fmod(x, y);
     /* Processing result */
-    ph7_result_double(pCtx,r);
+    ph7_result_double(pCtx, r);
+
     return PH7_OK;
 }
+
 /*
  * float hypot(float $x,float $y)
  *  Calculate the length of the hypotenuse of a right-angle triangle .
@@ -850,23 +938,27 @@ static int PH7_builtin_fmod(ph7_context *pCtx,int nArg,ph7_value **apArg)
  * Return
  *  Calculated length of the hypotenuse.
  */
-static int PH7_builtin_hypot(ph7_context *pCtx,int nArg,ph7_value **apArg)
+static int PH7_builtin_hypot(ph7_context* pCtx, int nArg, ph7_value** apArg)
 {
-    double x,y,r;
-    if( nArg < 2 ){
+    double x, y, r;
+    if (nArg < 2)
+    {
         /* Missing arguments */
-        ph7_result_double(pCtx,0);
+        ph7_result_double(pCtx, 0);
+
         return PH7_OK;
     }
     /* Extract given arguments */
     x = ph7_value_to_double(apArg[0]);
     y = ph7_value_to_double(apArg[1]);
     /* Perform the requested operation */
-    r = hypot(x,y);
+    r = hypot(x, y);
     /* Processing result */
-    ph7_result_double(pCtx,r);
+    ph7_result_double(pCtx, r);
+
     return PH7_OK;
 }
+
 #endif /* PH7_ENABLE_MATH_FUNC */
 
 /*
@@ -929,6 +1021,7 @@ static int PH7_builtin_round(ph7_context* pCtx, int nArg, ph7_value** apArg)
     }
     /* Return thr rounded value */
     ph7_result_double(pCtx, r);
+
     return PH7_OK;
 }
 

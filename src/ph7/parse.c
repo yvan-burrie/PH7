@@ -169,7 +169,8 @@
 #define EXPR_OP_ASSOC_LEFT   0x01 /* Left associative operator */
 #define EXPR_OP_ASSOC_RIGHT  0x02 /* Right associative operator */
 #define EXPR_OP_NON_ASSOC    0x04 /* Non-associative operator */
-/*
+
+/**
  * Operators table
  * This table is sorted by operators priority (highest to lowest) according
  * the PHP language reference manual.
@@ -274,9 +275,13 @@ static const ph7_expr_op aOpTable[] = {
     /* Precedence 22,left-associative [Lowest operator] */
     {{",",          sizeof(char)},             EXPR_OP_COMMA,      22, EXPR_OP_ASSOC_LEFT,  0}, /* IMP-0139-COMMA: Symisc eXtension */
 };
-/* Function call operator need special handling */
+
+/**
+ * Function call operator need special handling.
+ */
 static const ph7_expr_op sFCallOp = {{"(", sizeof(char)}, EXPR_OP_FUNC_CALL, 2, EXPR_OP_ASSOC_LEFT, PH7_OP_CALL};
-/*
+
+/**
  * Check if the given token is a potential operator or not.
  * This function is called by the lexer each time it extract a token that may
  * look like an operator.
@@ -337,13 +342,18 @@ PH7_PRIVATE const ph7_expr_op* PH7_ExprExtractOperator(SyString* pStr, SyToken* 
 /* No such operator */
     return 0;
 }
-/*
+
+/**
  * Delimit a set of token stream.
  * This function take care of handling the nesting level and stops when it hit
  * the end of the input or the ending token is found and the nesting level is zero.
  */
-PH7_PRIVATE void
-PH7_DelimitNestedTokens(SyToken* pIn, SyToken* pEnd, sxu32 nTokStart, sxu32 nTokEnd, SyToken** ppEnd)
+PH7_PRIVATE void PH7_DelimitNestedTokens(
+    SyToken* pIn,
+    SyToken* pEnd,
+    sxu32 nTokStart,
+    sxu32 nTokEnd,
+    SyToken** ppEnd)
 {
     SyToken* pCur = pIn;
     sxi32 iNest = 1;

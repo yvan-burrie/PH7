@@ -79,9 +79,11 @@ struct VmFrame
     sxi32 iFlags;     /* Frame configuration flags (See below)*/
     sxu32 iExceptionJump; /* Exception jump destination */
 };
+
 #define VM_FRAME_EXCEPTION  0x01 /* Special Exception frame */
 #define VM_FRAME_THROW      0x02 /* An exception was thrown */
 #define VM_FRAME_CATCH      0x04 /* Catch frame */
+
 /*
  * When a user defined variable is released (via manual unset($x) or garbage collected)
  * memory object index is stored in an instance of the following structure and put
@@ -94,6 +96,7 @@ struct VmSlot
     sxu32 nIdx;      /* Index in pVm->aMemObj[] */
     void* pUserData; /* Upper-layer private data */
 };
+
 /*
  * An entry in the reference table is represented by an instance of the
  * follwoing table.
@@ -113,7 +116,9 @@ struct VmRefObj
     VmRefObj* pNextCollide, * pPrevCollide; /* Collision link */
     VmRefObj* pNext, * pPrev;               /* List of all referenced objects */
 };
+
 #define VM_REF_IDX_KEEP  0x001 /* Do not restore the memory object to the free list */
+
 /*
  * Output control buffer entry.
  * Refer to the implementation of [ob_start()] for more information.
@@ -124,6 +129,7 @@ struct VmObEntry
     ph7_value sCallback; /* User defined callback */
     SyBlob sOB;          /* Output buffer consumer */
 };
+
 /*
  * Each installed shutdown callback (registered using [register_shutdown_function()] )
  * is stored in an instance of the following structure.
