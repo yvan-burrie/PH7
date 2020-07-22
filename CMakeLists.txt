@@ -30,3 +30,5 @@ target_sources(
 add_executable(ph7-test "${CMAKE_CURRENT_LIST_DIR}/tests/main.c")
 
 target_link_libraries(ph7-test ph7)
+
+add_compile_definitions("UNTRUST=TRUE")
