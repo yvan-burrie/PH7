@@ -11,7 +11,6 @@ target_sources(
     ph7
     PRIVATE
     "${CMAKE_CURRENT_LIST_DIR}/inc/ph7/ph7.h"
-    "${CMAKE_CURRENT_LIST_DIR}/inc/ph7/ph7.h"
     "${CMAKE_CURRENT_LIST_DIR}/inc/ph7/ph7int.h"
     "${CMAKE_CURRENT_LIST_DIR}/src/ph7/vm.c"
     "${CMAKE_CURRENT_LIST_DIR}/src/ph7/vfs.c"

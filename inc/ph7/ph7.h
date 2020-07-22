@@ -1,19 +1,5 @@
-#ifndef _PH7_H_
-#define _PH7_H_
 /*
- * Symisc PH7: An embeddable bytecode compiler and a virtual machine for the PHP(5) programming language.
- * Copyright (C) 2011-2012, Symisc Systems http://ph7.symisc.net/
- * Version 2.1.4
- * For information on licensing,redistribution of this file,and for a DISCLAIMER OF ALL WARRANTIES
- * please contact Symisc Systems via:
- *       legal@symisc.net
- *       licensing@symisc.net
- *       contact@symisc.net
- * or visit:
- *      http://ph7.symisc.net/
- */
-/*
- * Copyright (C) 2011, 2012 Symisc Systems. All rights reserved.
+ * Copyright (C) 2011-2020 Symisc Systems. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -24,7 +10,7 @@
  *    notice, this list of conditions and the following disclaimer in the
  *    documentation and/or other materials provided with the distribution.
  * 3. Redistributions in any form must be accompanied by information on
- *    how to obtain complete source code for the PH7 engine and any 
+ *    how to obtain complete source code for the PH7 engine and any
  *    accompanying software that uses the PH7 engine software.
  *    The source code must either be included in the distribution
  *    or be available for no more than the cost of distribution plus
@@ -46,9 +32,8 @@
  * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
  * IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-/* $SymiscID: ph7.h v2.1 UNIX|WIN32/64 2012-09-15 09:43 stable <chm@symisc.net> $ */
-#include <stdarg.h> /* needed for the definition of va_list */
-/*
+
+/**
  * Compile time engine version, signature, identification in the symisc source tree
  * and copyright notice.
  * Each macro have an equivalent C interface associated with it that provide the same
@@ -56,6 +41,11 @@
  * Refer to [ph7_lib_version()], [ph7_lib_signature()], [ph7_lib_ident()] and
  * [ph7_lib_copyright()] for more information.
  */
+
+#pragma once
+
+#include <stdarg.h> // needed for the definition of va_list.
+
 /*
  * The PH7_VERSION C preprocessor macroevaluates to a string literal
  * that is the ph7 version in the format "X.Y.Z" where X is the major
@@ -63,12 +53,14 @@
  * number.
  */
 #define PH7_VERSION "2.1.4"
+
 /*
  * The PH7_VERSION_NUMBER C preprocessor macro resolves to an integer
  * with the value (X*1000000 + Y*1000 + Z) where X, Y, and Z are the same
  * numbers used in [PH7_VERSION].
  */
 #define PH7_VERSION_NUMBER 2001004
+
 /*
  * The PH7_SIG C preprocessor macro evaluates to a string
  * literal which is the public signature of the ph7 engine.
@@ -77,6 +69,7 @@
  *   Server: YourWebServer/x.x PH7/x.x.x \r\n
  */
 #define PH7_SIG "PH7/2.1.4"
+
 /*
  * PH7 identification in the Symisc source tree:
  * Each particular check-in of a particular software released
@@ -84,6 +77,7 @@
  * This macro hold the one associated with ph7.
  */
 #define PH7_IDENT "ph7:c193f4d8a6b90ee60f9afad11840f1010054fdf9"
+
 /*
  * Copyright notice.
  * If you have any questions about the licensing situation,please
@@ -94,17 +88,18 @@
  *   contact@symisc.net
  */
 #define PH7_COPYRIGHT "Copyright (C) Symisc Systems 2011-2012, http://ph7.symisc.net/"
-/* Make sure we can call this stuff from C++ */
+
 #ifdef __cplusplus
 extern "C" {
 #endif
-/* Forward declaration to public objects */
+
 typedef struct ph7_io_stream ph7_io_stream;
 typedef struct ph7_context ph7_context;
 typedef struct ph7_value ph7_value;
 typedef struct ph7_vfs ph7_vfs;
 typedef struct ph7_vm ph7_vm;
 typedef struct ph7 ph7;
+
 /*
  * ------------------------------
  * Compile time directives
@@ -807,5 +802,3 @@ PH7_APIEXPORT const char* ph7_lib_copyright(void);
 #ifdef __cplusplus
 }
 #endif // __cplusplus
-
-#endif // _PH7_H_
