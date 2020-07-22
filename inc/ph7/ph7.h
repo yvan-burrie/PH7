@@ -1,5 +1,3 @@
-/* This file was automatically generated.  Do not edit (except for compile time directive)! */
-#pragma once
 #ifndef _PH7_H_
 #define _PH7_H_
 /*
@@ -639,13 +637,11 @@ PH7_APIEXPORT int ph7_vm_release(ph7_vm* pVm);
 PH7_APIEXPORT int ph7_vm_dump_v2(ph7_vm* pVm, int (* xConsumer)(const void*, unsigned int, void*), void* pUserData);
 
 /* In-process Extending Interfaces */
-PH7_APIEXPORT int
-ph7_create_function(ph7_vm* pVm, const char* zName, int (* xFunc)(ph7_context*, int, ph7_value**), void* pUserData);
+PH7_APIEXPORT int ph7_create_function(ph7_vm* pVm, const char* zName, int (* xFunc)(ph7_context*, int, ph7_value**), void* pUserData);
 
 PH7_APIEXPORT int ph7_delete_function(ph7_vm* pVm, const char* zName);
 
-PH7_APIEXPORT int
-ph7_create_constant(ph7_vm* pVm, const char* zName, void (* xExpand)(ph7_value*, void*), void* pUserData);
+PH7_APIEXPORT int ph7_create_constant(ph7_vm* pVm, const char* zName, void (* xExpand)(ph7_value*, void*), void* pUserData);
 
 PH7_APIEXPORT int ph7_delete_constant(ph7_vm* pVm, const char* zName);
 
