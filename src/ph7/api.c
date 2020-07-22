@@ -378,30 +378,30 @@ static sxi32 PH7CoreInitialize(void)
     if (sMPGlobal.nMagic != PH7_LIB_MAGIC)
     {
 #endif
-        if (sMPGlobal.sAllocator.pMethods == 0)
+    if (sMPGlobal.sAllocator.pMethods == 0)
+    {
+        /* Install a memory subsystem */
+        rc = ph7_lib_config(PH7_LIB_CONFIG_USER_MALLOC, 0); /* zero mean use the built-in memory backend */
+        if (rc != PH7_OK)
         {
-            /* Install a memory subsystem */
-            rc = ph7_lib_config(PH7_LIB_CONFIG_USER_MALLOC, 0); /* zero mean use the built-in memory backend */
-            if (rc != PH7_OK)
-            {
-                /* If we are unable to initialize the memory backend,there is no much we can do here.*/
-                goto End;
-            }
+            /* If we are unable to initialize the memory backend,there is no much we can do here.*/
+            goto End;
         }
+    }
 #if defined(PH7_ENABLE_THREADS)
-        if (sMPGlobal.nThreadingLevel > PH7_THREAD_LEVEL_SINGLE)
+    if (sMPGlobal.nThreadingLevel > PH7_THREAD_LEVEL_SINGLE)
+    {
+        /* Protect the memory allocation subsystem */
+        rc = SyMemBackendMakeThreadSafe(&sMPGlobal.sAllocator, sMPGlobal.pMutexMethods);
+        if (rc != PH7_OK)
         {
-            /* Protect the memory allocation subsystem */
-            rc = SyMemBackendMakeThreadSafe(&sMPGlobal.sAllocator, sMPGlobal.pMutexMethods);
-            if (rc != PH7_OK)
-            {
-                goto End;
-            }
+            goto End;
         }
+    }
 #endif
-        /* Our library is initialized,set the magic number */
-        sMPGlobal.nMagic = PH7_LIB_MAGIC;
-        rc = PH7_OK;
+    /* Our library is initialized,set the magic number */
+    sMPGlobal.nMagic = PH7_LIB_MAGIC;
+    rc = PH7_OK;
 #if defined(PH7_ENABLE_THREADS)
     } /* sMPGlobal.nMagic != PH7_LIB_MAGIC */
 #endif
@@ -588,14 +588,14 @@ int ph7_config(ph7* pEngine, int nConfigOp, ...)
         return PH7_CORRUPT;
     }
 #if defined(PH7_ENABLE_THREADS)
-    /* Acquire engine mutex */
-    SyMutexEnter(sMPGlobal.pMutexMethods,
-                 pEngine->pMutex); /* NO-OP if sMPGlobal.nThreadingLevel != PH7_THREAD_LEVEL_MULTI */
-    if (sMPGlobal.nThreadingLevel > PH7_THREAD_LEVEL_SINGLE &&
-        PH7_THRD_ENGINE_RELEASE(pEngine))
-    {
-        return PH7_ABORT; /* Another thread have released this instance */
-    }
+        /* Acquire engine mutex */
+        SyMutexEnter(sMPGlobal.pMutexMethods,
+                     pEngine->pMutex); /* NO-OP if sMPGlobal.nThreadingLevel != PH7_THREAD_LEVEL_MULTI */
+        if (sMPGlobal.nThreadingLevel > PH7_THREAD_LEVEL_SINGLE &&
+            PH7_THRD_ENGINE_RELEASE(pEngine))
+        {
+            return PH7_ABORT; /* Another thread have released this instance */
+        }
 #endif
     va_start(ap, nConfigOp);
     rc = EngineConfig(&(*pEngine), nConfigOp, ap);
@@ -665,7 +665,7 @@ int ph7_init(ph7** ppEngine)
         }
     }
 #endif
-        /* Link to the list of active engines */
+    /* Link to the list of active engines */
 #if defined(PH7_ENABLE_THREADS)
     /* Enter the global mutex */
     SyMutexEnter(sMPGlobal.pMutexMethods,
@@ -1023,14 +1023,14 @@ int ph7_vm_config(ph7_vm* pVm, int iConfigOp, ...)
         return PH7_CORRUPT;
     }
 #if defined(PH7_ENABLE_THREADS)
-    /* Acquire VM mutex */
-    SyMutexEnter(sMPGlobal.pMutexMethods,
-                 pVm->pMutex); /* NO-OP if sMPGlobal.nThreadingLevel != PH7_THREAD_LEVEL_MULTI */
-    if (sMPGlobal.nThreadingLevel > PH7_THREAD_LEVEL_SINGLE &&
-        PH7_THRD_VM_RELEASE(pVm))
-    {
-        return PH7_ABORT; /* Another thread have released this instance */
-    }
+        /* Acquire VM mutex */
+        SyMutexEnter(sMPGlobal.pMutexMethods,
+                     pVm->pMutex); /* NO-OP if sMPGlobal.nThreadingLevel != PH7_THREAD_LEVEL_MULTI */
+        if (sMPGlobal.nThreadingLevel > PH7_THREAD_LEVEL_SINGLE &&
+            PH7_THRD_VM_RELEASE(pVm))
+        {
+            return PH7_ABORT; /* Another thread have released this instance */
+        }
 #endif
     /* Confiugure the virtual machine */
     va_start(ap, iConfigOp);

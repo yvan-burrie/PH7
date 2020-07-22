@@ -33,18 +33,17 @@
  * IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <ph7/ph7int.h>
-
-/*
+/**
  * This file implement an efficient hand-coded,thread-safe and full-reentrant
  * lexical analyzer/Tokenizer for the PH7 engine.
  */
-/* Forward declaration */
+#include <ph7/ph7int.h>
+
 static sxu32 KeywordCode(const char* z, int n);
 
 static sxi32 LexExtractHeredoc(SyStream* pStream, SyToken* pToken);
 
-/*
+/**
  * Tokenize a raw PHP input.
  * Get a single low-level token from the input file. Update the stream pointer so that
  * it points to the first character beyond the extracted token.

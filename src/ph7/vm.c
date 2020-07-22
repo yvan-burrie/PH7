@@ -204,50 +204,50 @@ struct SyhttpHeader
  */
 PH7_PRIVATE sxi32 PH7_VmRegisterConstant(
     ph7_vm* pVm,            /* Target VM */
-const SyString* pName,  /* Constant name */
-ProcConstant xExpand,   /* Constant expansion callback */
-void* pUserData         /* Last argument to xExpand() */
+    const SyString* pName,  /* Constant name */
+    ProcConstant xExpand,   /* Constant expansion callback */
+    void* pUserData         /* Last argument to xExpand() */
 )
 {
-ph7_constant* pCons;
-SyHashEntry* pEntry;
-char* zDupName;
-sxi32 rc;
-pEntry = SyHashGet(&pVm->hConstant, (const void*)pName->zString, pName->nByte);
-if (pEntry != NULL)
-{
+    ph7_constant* pCons;
+    SyHashEntry* pEntry;
+    char* zDupName;
+    sxi32 rc;
+    pEntry = SyHashGet(&pVm->hConstant, (const void*)pName->zString, pName->nByte);
+    if (pEntry != NULL)
+    {
 /* Overwrite the old definition and return immediately */
-pCons = (ph7_constant*)pEntry->pUserData;
-pCons->xExpand = xExpand;
-pCons->pUserData = pUserData;
-return SXRET_OK;
-}
+        pCons = (ph7_constant*)pEntry->pUserData;
+        pCons->xExpand = xExpand;
+        pCons->pUserData = pUserData;
+        return SXRET_OK;
+    }
 /* Allocate a new constant instance */
-pCons = (ph7_constant*)SyMemBackendPoolAlloc(&pVm->sAllocator, sizeof(ph7_constant));
-if (pCons == 0)
-{
-return 0;
-}
+    pCons = (ph7_constant*)SyMemBackendPoolAlloc(&pVm->sAllocator, sizeof(ph7_constant));
+    if (pCons == 0)
+    {
+        return 0;
+    }
 /* Duplicate constant name */
-zDupName = SyMemBackendStrDup(&pVm->sAllocator, pName->zString, pName->nByte);
-if (zDupName == 0)
-{
-SyMemBackendPoolFree(&pVm->sAllocator, pCons);
-return 0;
-}
+    zDupName = SyMemBackendStrDup(&pVm->sAllocator, pName->zString, pName->nByte);
+    if (zDupName == 0)
+    {
+        SyMemBackendPoolFree(&pVm->sAllocator, pCons);
+        return 0;
+    }
 /* Install the constant */
-SyStringInitFromBuf(&pCons->sName, zDupName, pName->nByte);
-pCons->xExpand = xExpand;
-pCons->pUserData = pUserData;
-rc = SyHashInsert(&pVm->hConstant, (const void*)zDupName, SyStringLength(&pCons->sName), pCons);
-if (rc != SXRET_OK)
-{
-SyMemBackendFree(&pVm->sAllocator, zDupName);
-SyMemBackendPoolFree(&pVm->sAllocator, pCons);
-return rc;
-}
+    SyStringInitFromBuf(&pCons->sName, zDupName, pName->nByte);
+    pCons->xExpand = xExpand;
+    pCons->pUserData = pUserData;
+    rc = SyHashInsert(&pVm->hConstant, (const void*)zDupName, SyStringLength(&pCons->sName), pCons);
+    if (rc != SXRET_OK)
+    {
+        SyMemBackendFree(&pVm->sAllocator, zDupName);
+        SyMemBackendPoolFree(&pVm->sAllocator, pCons);
+        return rc;
+    }
 /* All done,constant can be invoked from PHP code */
-return SXRET_OK;
+    return SXRET_OK;
 }
 
 /*
@@ -302,230 +302,230 @@ static sxi32 PH7_NewForeignFunction(
  */
 PH7_PRIVATE sxi32 PH7_VmInstallForeignFunction(
     ph7_vm* pVm,              /* Target VM */
-const SyString* pName,    /* Foreign function name */
-ProchHostFunction xFunc,  /* Foreign function implementation */
-void* pUserData           /* Foreign function private data */
+    const SyString* pName,    /* Foreign function name */
+    ProchHostFunction xFunc,  /* Foreign function implementation */
+    void* pUserData           /* Foreign function private data */
 )
 {
-ph7_user_func* pFunc;
-SyHashEntry* pEntry;
-sxi32 rc;
+    ph7_user_func* pFunc;
+    SyHashEntry* pEntry;
+    sxi32 rc;
 /* Overwrite any previously registered function with the same name */
-pEntry = SyHashGet(&pVm->hHostFunction, pName->zString, pName->nByte);
-if (pEntry != NULL)
-{
-pFunc = (ph7_user_func*)pEntry->pUserData;
-pFunc->pUserData = pUserData;
-pFunc->xFunc = xFunc;
-SySetReset(&pFunc->aAux);
-return SXRET_OK;
-}
+    pEntry = SyHashGet(&pVm->hHostFunction, pName->zString, pName->nByte);
+    if (pEntry != NULL)
+    {
+        pFunc = (ph7_user_func*)pEntry->pUserData;
+        pFunc->pUserData = pUserData;
+        pFunc->xFunc = xFunc;
+        SySetReset(&pFunc->aAux);
+        return SXRET_OK;
+    }
 /* Create a new user function */
-rc = PH7_NewForeignFunction(&(*pVm), &(*pName), xFunc, pUserData, &pFunc);
-if (rc != SXRET_OK)
-{
-return rc;
-}
+    rc = PH7_NewForeignFunction(&(*pVm), &(*pName), xFunc, pUserData, &pFunc);
+    if (rc != SXRET_OK)
+    {
+        return rc;
+    }
 /* Install the function in the corresponding hashtable */
-rc = SyHashInsert(&pVm->hHostFunction, SyStringData(&pFunc->sName), pName->nByte, pFunc);
-if (rc != SXRET_OK)
-{
-SyMemBackendFree(&pVm->sAllocator, (void*)SyStringData(&pFunc->sName));
-SyMemBackendPoolFree(&pVm->sAllocator, pFunc);
-return rc;
-}
+    rc = SyHashInsert(&pVm->hHostFunction, SyStringData(&pFunc->sName), pName->nByte, pFunc);
+    if (rc != SXRET_OK)
+    {
+        SyMemBackendFree(&pVm->sAllocator, (void*)SyStringData(&pFunc->sName));
+        SyMemBackendPoolFree(&pVm->sAllocator, pFunc);
+        return rc;
+    }
 /* User function successfully installed */
-return SXRET_OK;
+    return SXRET_OK;
 }
 /*
  * Initialize a VM function.
  */
 PH7_PRIVATE sxi32 PH7_VmInitFuncState(
     ph7_vm* pVm,        /* Target VM */
-ph7_vm_func* pFunc, /* Target Fucntion */
-const char* zName,  /* Function name */
-sxu32 nByte,        /* zName length */
-sxi32 iFlags,       /* Configuration flags */
-void* pUserData     /* Function private data */
+    ph7_vm_func* pFunc, /* Target Fucntion */
+    const char* zName,  /* Function name */
+    sxu32 nByte,        /* zName length */
+    sxi32 iFlags,       /* Configuration flags */
+    void* pUserData     /* Function private data */
 )
 {
 /* Zero the structure */
-SyZero(pFunc, sizeof(ph7_vm_func));
+    SyZero(pFunc, sizeof(ph7_vm_func));
 /* Initialize structure fields */
 /* Arguments container */
-SySetInit(&pFunc->aArgs, &pVm->sAllocator, sizeof(ph7_vm_func_arg));
+    SySetInit(&pFunc->aArgs, &pVm->sAllocator, sizeof(ph7_vm_func_arg));
 /* Static variable container */
-SySetInit(&pFunc->aStatic, &pVm->sAllocator, sizeof(ph7_vm_func_static_var));
+    SySetInit(&pFunc->aStatic, &pVm->sAllocator, sizeof(ph7_vm_func_static_var));
 /* Bytecode container */
-SySetInit(&pFunc->aByteCode, &pVm->sAllocator, sizeof(VmInstr));
+    SySetInit(&pFunc->aByteCode, &pVm->sAllocator, sizeof(VmInstr));
 /* Preallocate some instruction slots */
-SySetAlloc(&pFunc->aByteCode, 0x10);
+    SySetAlloc(&pFunc->aByteCode, 0x10);
 /* Closure environment */
-SySetInit(&pFunc->aClosureEnv, &pVm->sAllocator, sizeof(ph7_vm_func_closure_env));
-pFunc->iFlags = iFlags;
-pFunc->pUserData = pUserData;
-SyStringInitFromBuf(&pFunc->sName, zName, nByte);
-return SXRET_OK;
+    SySetInit(&pFunc->aClosureEnv, &pVm->sAllocator, sizeof(ph7_vm_func_closure_env));
+    pFunc->iFlags = iFlags;
+    pFunc->pUserData = pUserData;
+    SyStringInitFromBuf(&pFunc->sName, zName, nByte);
+    return SXRET_OK;
 }
 /*
  * Install a user defined function in the corresponding VM container.
  */
 PH7_PRIVATE sxi32 PH7_VmInstallUserFunction(
     ph7_vm* pVm,        /* Target VM */
-ph7_vm_func* pFunc, /* Target function */
-SyString* pName     /* Function name */
+    ph7_vm_func* pFunc, /* Target function */
+    SyString* pName     /* Function name */
 )
 {
-SyHashEntry* pEntry;
-sxi32 rc;
-if (pName == 0)
-{
+    SyHashEntry* pEntry;
+    sxi32 rc;
+    if (pName == 0)
+    {
 /* Use the built-in name */
-pName = &pFunc->sName;
-}
+        pName = &pFunc->sName;
+    }
 /* Check for duplicates (functions with the same name) first */
-pEntry = SyHashGet(&pVm->hFunction, pName->zString, pName->nByte);
-if (pEntry != NULL)
-{
-ph7_vm_func* pLink = (ph7_vm_func*)pEntry->pUserData;
-if (pLink != pFunc)
-{
+    pEntry = SyHashGet(&pVm->hFunction, pName->zString, pName->nByte);
+    if (pEntry != NULL)
+    {
+        ph7_vm_func* pLink = (ph7_vm_func*)pEntry->pUserData;
+        if (pLink != pFunc)
+        {
 /* Link */
-pFunc->pNextName = pLink;
-pEntry->pUserData = pFunc;
-}
-return SXRET_OK;
-}
+            pFunc->pNextName = pLink;
+            pEntry->pUserData = pFunc;
+        }
+        return SXRET_OK;
+    }
 /* First time seen */
-pFunc->pNextName = 0;
-rc = SyHashInsert(&pVm->hFunction, pName->zString, pName->nByte, pFunc);
-return rc;
+    pFunc->pNextName = 0;
+    rc = SyHashInsert(&pVm->hFunction, pName->zString, pName->nByte, pFunc);
+    return rc;
 }
 /*
  * Install a user defined class in the corresponding VM container.
  */
 PH7_PRIVATE sxi32 PH7_VmInstallClass(
     ph7_vm* pVm,      /* Target VM  */
-ph7_class* pClass /* Target Class */
+    ph7_class* pClass /* Target Class */
 )
 {
-SyString* pName = &pClass->sName;
-SyHashEntry* pEntry;
-sxi32 rc;
+    SyString* pName = &pClass->sName;
+    SyHashEntry* pEntry;
+    sxi32 rc;
 /* Check for duplicates */
-pEntry = SyHashGet(&pVm->hClass, (const void*)pName->zString, pName->nByte);
-if (pEntry != NULL)
-{
-ph7_class* pLink = (ph7_class*)pEntry->pUserData;
+    pEntry = SyHashGet(&pVm->hClass, (const void*)pName->zString, pName->nByte);
+    if (pEntry != NULL)
+    {
+        ph7_class* pLink = (ph7_class*)pEntry->pUserData;
 /* Link entry with the same name */
-pClass->pNextName = pLink;
-pEntry->pUserData = pClass;
-return SXRET_OK;
-}
-pClass->pNextName = 0;
+        pClass->pNextName = pLink;
+        pEntry->pUserData = pClass;
+        return SXRET_OK;
+    }
+    pClass->pNextName = 0;
 /* Perform a simple hashtable insertion */
-rc = SyHashInsert(&pVm->hClass, (const void*)pName->zString, pName->nByte, pClass);
-return rc;
+    rc = SyHashInsert(&pVm->hClass, (const void*)pName->zString, pName->nByte, pClass);
+    return rc;
 }
 /*
  * Instruction builder interface.
  */
 PH7_PRIVATE sxi32 PH7_VmEmitInstr(
     ph7_vm* pVm,  /* Target VM */
-sxi32 iOp,    /* Operation to perform */
-sxi32 iP1,    /* First operand */
-sxu32 iP2,    /* Second operand */
-void* p3,     /* Third operand */
-sxu32* pIndex /* Instruction index. NULL otherwise */
+    sxi32 iOp,    /* Operation to perform */
+    sxi32 iP1,    /* First operand */
+    sxu32 iP2,    /* Second operand */
+    void* p3,     /* Third operand */
+    sxu32* pIndex /* Instruction index. NULL otherwise */
 )
 {
-VmInstr sInstr;
-sxi32 rc;
+    VmInstr sInstr;
+    sxi32 rc;
 /* Fill the VM instruction */
-sInstr.iOp = (sxu8)iOp;
-sInstr.iP1 = iP1;
-sInstr.iP2 = iP2;
-sInstr.p3 = p3;
-if (pIndex)
-{
+    sInstr.iOp = (sxu8)iOp;
+    sInstr.iP1 = iP1;
+    sInstr.iP2 = iP2;
+    sInstr.p3 = p3;
+    if (pIndex)
+    {
 /* Instruction index in the bytecode array */
-*pIndex = SySetUsed(pVm->pByteContainer);
-}
+        *pIndex = SySetUsed(pVm->pByteContainer);
+    }
 /* Finally,record the instruction */
-rc = SySetPut(pVm->pByteContainer, (const void*)&sInstr);
-if (rc != SXRET_OK)
-{
-PH7_GenCompileError(&pVm->sCodeGen, E_ERROR, 1, "Fatal,Cannot emit instruction due to a memory failure");
+    rc = SySetPut(pVm->pByteContainer, (const void*)&sInstr);
+    if (rc != SXRET_OK)
+    {
+        PH7_GenCompileError(&pVm->sCodeGen, E_ERROR, 1, "Fatal,Cannot emit instruction due to a memory failure");
 /* Fall throw */
-}
-return rc;
+    }
+    return rc;
 }
 /*
  * Swap the current bytecode container with the given one.
  */
 PH7_PRIVATE sxi32 PH7_VmSetByteCodeContainer(ph7_vm* pVm, SySet* pContainer)
 {
-if (pContainer == 0)
-{
+    if (pContainer == 0)
+    {
 /* Point to the default container */
-pVm->pByteContainer = &pVm->aByteCode;
-}
-else
-{
+        pVm->pByteContainer = &pVm->aByteCode;
+    }
+    else
+    {
 /* Change container */
-pVm->pByteContainer = &(*pContainer);
-}
-return SXRET_OK;
+        pVm->pByteContainer = &(*pContainer);
+    }
+    return SXRET_OK;
 }
 /*
  * Return the current bytecode container.
  */
 PH7_PRIVATE SySet* PH7_VmGetByteCodeContainer(ph7_vm* pVm)
 {
-return pVm->pByteContainer;
+    return pVm->pByteContainer;
 }
 /*
  * Extract the VM instruction rooted at nIndex.
  */
 PH7_PRIVATE VmInstr* PH7_VmGetInstr(ph7_vm* pVm, sxu32 nIndex)
 {
-VmInstr* pInstr;
-pInstr = (VmInstr*)SySetAt(pVm->pByteContainer, nIndex);
-return pInstr;
+    VmInstr* pInstr;
+    pInstr = (VmInstr*)SySetAt(pVm->pByteContainer, nIndex);
+    return pInstr;
 }
 /*
  * Return the total number of VM instructions recorded so far.
  */
 PH7_PRIVATE sxu32 PH7_VmInstrLength(ph7_vm* pVm)
 {
-return SySetUsed(pVm->pByteContainer);
+    return SySetUsed(pVm->pByteContainer);
 }
 /*
  * Pop the last VM instruction.
  */
 PH7_PRIVATE VmInstr* PH7_VmPopInstr(ph7_vm* pVm)
 {
-return (VmInstr*)SySetPop(pVm->pByteContainer);
+    return (VmInstr*)SySetPop(pVm->pByteContainer);
 }
 /*
  * Peek the last VM instruction.
  */
 PH7_PRIVATE VmInstr* PH7_VmPeekInstr(ph7_vm* pVm)
 {
-return (VmInstr*)SySetPeek(pVm->pByteContainer);
+    return (VmInstr*)SySetPeek(pVm->pByteContainer);
 }
 
 PH7_PRIVATE VmInstr* PH7_VmPeekNextInstr(ph7_vm* pVm)
 {
-VmInstr* aInstr;
-sxu32 n;
-n = SySetUsed(pVm->pByteContainer);
-if (n < 2)
-{
-return 0;
-}
-aInstr = (VmInstr*)SySetBasePtr(pVm->pByteContainer);
-return &aInstr[n - 2];
+    VmInstr* aInstr;
+    sxu32 n;
+    n = SySetUsed(pVm->pByteContainer);
+    if (n < 2)
+    {
+        return 0;
+    }
+    aInstr = (VmInstr*)SySetBasePtr(pVm->pByteContainer);
+    return &aInstr[n - 2];
 }
 
 /*
@@ -898,69 +898,69 @@ static sxi32 VmMountUserClass(
  */
 PH7_PRIVATE sxi32 PH7_VmCreateClassInstanceFrame(
     ph7_vm* pVm, /* Target VM */
-ph7_class_instance* pObj /* Class instance */
+    ph7_class_instance* pObj /* Class instance */
 )
 {
-ph7_class* pClass = pObj->pClass;
-ph7_class_attr* pAttr;
-SyHashEntry* pEntry;
-sxi32 rc;
+    ph7_class* pClass = pObj->pClass;
+    ph7_class_attr* pAttr;
+    SyHashEntry* pEntry;
+    sxi32 rc;
 /* Install class attribute in the private frame associated with this instance */
-SyHashResetLoopCursor(&pClass->hAttr);
-while ((pEntry = SyHashGetNextEntry(&pClass->hAttr)) != 0)
-{
-VmClassAttr* pVmAttr;
+    SyHashResetLoopCursor(&pClass->hAttr);
+    while ((pEntry = SyHashGetNextEntry(&pClass->hAttr)) != 0)
+    {
+        VmClassAttr* pVmAttr;
 /* Extract the current attribute */
-pAttr = (ph7_class_attr*)pEntry->pUserData;
-pVmAttr = (VmClassAttr*)SyMemBackendPoolAlloc(&pVm->sAllocator, sizeof(VmClassAttr));
-if (pVmAttr == 0)
-{
-return SXERR_MEM;
-}
-pVmAttr->pAttr = pAttr;
-if ((pAttr->iFlags & (PH7_CLASS_ATTR_CONSTANT | PH7_CLASS_ATTR_STATIC)) == 0)
-{
-ph7_value* pMemObj;
+        pAttr = (ph7_class_attr*)pEntry->pUserData;
+        pVmAttr = (VmClassAttr*)SyMemBackendPoolAlloc(&pVm->sAllocator, sizeof(VmClassAttr));
+        if (pVmAttr == 0)
+        {
+            return SXERR_MEM;
+        }
+        pVmAttr->pAttr = pAttr;
+        if ((pAttr->iFlags & (PH7_CLASS_ATTR_CONSTANT | PH7_CLASS_ATTR_STATIC)) == 0)
+        {
+            ph7_value* pMemObj;
 /* Reserve a memory object for this attribute */
-pMemObj = PH7_ReserveMemObj(&(*pVm));
-if (pMemObj == 0)
-{
-SyMemBackendPoolFree(&pVm->sAllocator, pVmAttr);
-return SXERR_MEM;
-}
-pVmAttr->nIdx = pMemObj->nIdx;
-if (SySetUsed(&pAttr->aByteCode) > 0)
-{
+            pMemObj = PH7_ReserveMemObj(&(*pVm));
+            if (pMemObj == 0)
+            {
+                SyMemBackendPoolFree(&pVm->sAllocator, pVmAttr);
+                return SXERR_MEM;
+            }
+            pVmAttr->nIdx = pMemObj->nIdx;
+            if (SySetUsed(&pAttr->aByteCode) > 0)
+            {
 /* Initialize attribute default value (any complex expression) */
-VmLocalExec(&(*pVm), &pAttr->aByteCode, pMemObj);
-}
-rc = SyHashInsert(&pObj->hAttr, SyStringData(&pAttr->sName), SyStringLength(&pAttr->sName), pVmAttr);
-if (rc != SXRET_OK)
-{
-VmSlot sSlot;
+                VmLocalExec(&(*pVm), &pAttr->aByteCode, pMemObj);
+            }
+            rc = SyHashInsert(&pObj->hAttr, SyStringData(&pAttr->sName), SyStringLength(&pAttr->sName), pVmAttr);
+            if (rc != SXRET_OK)
+            {
+                VmSlot sSlot;
 /* Restore memory object */
-sSlot.nIdx = pMemObj->nIdx;
-sSlot.pUserData = 0;
-SySetPut(&pVm->aFreeObj, (const void*)&sSlot);
-SyMemBackendPoolFree(&pVm->sAllocator, pVmAttr);
-return SXERR_MEM;
-}
+                sSlot.nIdx = pMemObj->nIdx;
+                sSlot.pUserData = 0;
+                SySetPut(&pVm->aFreeObj, (const void*)&sSlot);
+                SyMemBackendPoolFree(&pVm->sAllocator, pVmAttr);
+                return SXERR_MEM;
+            }
 /* Install attribute in the reference table */
-PH7_VmRefObjInstall(&(*pVm), pMemObj->nIdx, 0, 0, VM_REF_IDX_KEEP);
-}
-else
-{
+            PH7_VmRefObjInstall(&(*pVm), pMemObj->nIdx, 0, 0, VM_REF_IDX_KEEP);
+        }
+        else
+        {
 /* Install static/constant attribute */
-pVmAttr->nIdx = pAttr->nIdx;
-rc = SyHashInsert(&pObj->hAttr, SyStringData(&pAttr->sName), SyStringLength(&pAttr->sName), pVmAttr);
-if (rc != SXRET_OK)
-{
-SyMemBackendPoolFree(&pVm->sAllocator, pVmAttr);
-return SXERR_MEM;
-}
-}
-}
-return SXRET_OK;
+            pVmAttr->nIdx = pAttr->nIdx;
+            rc = SyHashInsert(&pObj->hAttr, SyStringData(&pAttr->sName), SyStringLength(&pAttr->sName), pVmAttr);
+            if (rc != SXRET_OK)
+            {
+                SyMemBackendPoolFree(&pVm->sAllocator, pVmAttr);
+                return SXERR_MEM;
+            }
+        }
+    }
+    return SXRET_OK;
 }
 
 /* Forward declaration */
@@ -978,24 +978,24 @@ static const char zDummy[sizeof(ph7_value)] = {0}; /* Must be >= sizeof(ph7_valu
  */
 PH7_PRIVATE ph7_value* PH7_ReserveConstObj(ph7_vm* pVm, sxu32* pIndex)
 {
-ph7_value* pObj;
-sxi32 rc;
-if (pIndex)
-{
+    ph7_value* pObj;
+    sxi32 rc;
+    if (pIndex)
+    {
 /* Object index in the object table */
-*pIndex = SySetUsed(&pVm->aLitObj);
-}
+        *pIndex = SySetUsed(&pVm->aLitObj);
+    }
 /* Reserve a slot for the new object */
-rc = SySetPut(&pVm->aLitObj, (const void*)zDummy);
-if (rc != SXRET_OK)
-{
+    rc = SySetPut(&pVm->aLitObj, (const void*)zDummy);
+    if (rc != SXRET_OK)
+    {
 /* If the supplied memory subsystem is so sick that we are unable to allocate
  * a tiny chunk of memory, there is no much we can do here.
  */
-return 0;
-}
-pObj = (ph7_value*)SySetPeek(&pVm->aLitObj);
-return pObj;
+        return 0;
+    }
+    pObj = (ph7_value*)SySetPeek(&pVm->aLitObj);
+    return pObj;
 }
 /*
  * Reserve a memory object.
@@ -1003,24 +1003,24 @@ return pObj;
  */
 PH7_PRIVATE ph7_value* VmReserveMemObj(ph7_vm* pVm, sxu32* pIndex)
 {
-ph7_value* pObj;
-sxi32 rc;
-if (pIndex)
-{
+    ph7_value* pObj;
+    sxi32 rc;
+    if (pIndex)
+    {
 /* Object index in the object table */
-*pIndex = SySetUsed(&pVm->aMemObj);
-}
+        *pIndex = SySetUsed(&pVm->aMemObj);
+    }
 /* Reserve a slot for the new object */
-rc = SySetPut(&pVm->aMemObj, (const void*)zDummy);
-if (rc != SXRET_OK)
-{
+    rc = SySetPut(&pVm->aMemObj, (const void*)zDummy);
+    if (rc != SXRET_OK)
+    {
 /* If the supplied memory subsystem is so sick that we are unable to allocate
  * a tiny chunk of memory, there is no much we can do here.
  */
-return 0;
-}
-pObj = (ph7_value*)SySetPeek(&pVm->aMemObj);
-return pObj;
+        return 0;
+    }
+    pObj = (ph7_value*)SySetPeek(&pVm->aMemObj);
+    return pObj;
 }
 
 /* Forward declaration */
@@ -1365,122 +1365,122 @@ static sxi32 VmEvalChunk(ph7_vm* pVm, ph7_context* pCtx, SyString* pChunk, int i
  */
 PH7_PRIVATE sxi32 PH7_VmInit(
     ph7_vm* pVm, /* Initialize this */
-ph7* pEngine /* Master engine */
+    ph7* pEngine /* Master engine */
 )
 {
-SyString sBuiltin;
-ph7_value* pObj;
-sxi32 rc;
+    SyString sBuiltin;
+    ph7_value* pObj;
+    sxi32 rc;
 /* Zero the structure */
-SyZero(pVm, sizeof(ph7_vm));
+    SyZero(pVm, sizeof(ph7_vm));
 /* Initialize VM fields */
-pVm->pEngine = &(*pEngine);
-SyMemBackendInitFromParent(&pVm->sAllocator, &pEngine->sAllocator);
+    pVm->pEngine = &(*pEngine);
+    SyMemBackendInitFromParent(&pVm->sAllocator, &pEngine->sAllocator);
 /* Instructions containers */
-SySetInit(&pVm->aByteCode, &pVm->sAllocator, sizeof(VmInstr));
-SySetAlloc(&pVm->aByteCode, 0xFF);
-pVm->pByteContainer = &pVm->aByteCode;
+    SySetInit(&pVm->aByteCode, &pVm->sAllocator, sizeof(VmInstr));
+    SySetAlloc(&pVm->aByteCode, 0xFF);
+    pVm->pByteContainer = &pVm->aByteCode;
 /* Object containers */
-SySetInit(&pVm->aMemObj, &pVm->sAllocator, sizeof(ph7_value));
-SySetAlloc(&pVm->aMemObj, 0xFF);
+    SySetInit(&pVm->aMemObj, &pVm->sAllocator, sizeof(ph7_value));
+    SySetAlloc(&pVm->aMemObj, 0xFF);
 /* Virtual machine internal containers */
-SyBlobInit(&pVm->sConsumer, &pVm->sAllocator);
-SyBlobInit(&pVm->sWorker, &pVm->sAllocator);
-SyBlobInit(&pVm->sArgv, &pVm->sAllocator);
-SySetInit(&pVm->aLitObj, &pVm->sAllocator, sizeof(ph7_value));
-SySetAlloc(&pVm->aLitObj, 0xFF);
-SyHashInit(&pVm->hHostFunction, &pVm->sAllocator, 0, 0);
-SyHashInit(&pVm->hFunction, &pVm->sAllocator, 0, 0);
-SyHashInit(&pVm->hClass, &pVm->sAllocator, SyStrHash, SyStrnmicmp);
-SyHashInit(&pVm->hConstant, &pVm->sAllocator, 0, 0);
-SyHashInit(&pVm->hSuper, &pVm->sAllocator, 0, 0);
-SyHashInit(&pVm->hPDO, &pVm->sAllocator, 0, 0);
-SySetInit(&pVm->aFreeObj, &pVm->sAllocator, sizeof(VmSlot));
-SySetInit(&pVm->aSelf, &pVm->sAllocator, sizeof(ph7_class*));
-SySetInit(&pVm->aShutdown, &pVm->sAllocator, sizeof(VmShutdownCB));
-SySetInit(&pVm->aException, &pVm->sAllocator, sizeof(ph7_exception*));
+    SyBlobInit(&pVm->sConsumer, &pVm->sAllocator);
+    SyBlobInit(&pVm->sWorker, &pVm->sAllocator);
+    SyBlobInit(&pVm->sArgv, &pVm->sAllocator);
+    SySetInit(&pVm->aLitObj, &pVm->sAllocator, sizeof(ph7_value));
+    SySetAlloc(&pVm->aLitObj, 0xFF);
+    SyHashInit(&pVm->hHostFunction, &pVm->sAllocator, 0, 0);
+    SyHashInit(&pVm->hFunction, &pVm->sAllocator, 0, 0);
+    SyHashInit(&pVm->hClass, &pVm->sAllocator, SyStrHash, SyStrnmicmp);
+    SyHashInit(&pVm->hConstant, &pVm->sAllocator, 0, 0);
+    SyHashInit(&pVm->hSuper, &pVm->sAllocator, 0, 0);
+    SyHashInit(&pVm->hPDO, &pVm->sAllocator, 0, 0);
+    SySetInit(&pVm->aFreeObj, &pVm->sAllocator, sizeof(VmSlot));
+    SySetInit(&pVm->aSelf, &pVm->sAllocator, sizeof(ph7_class*));
+    SySetInit(&pVm->aShutdown, &pVm->sAllocator, sizeof(VmShutdownCB));
+    SySetInit(&pVm->aException, &pVm->sAllocator, sizeof(ph7_exception*));
 /* Configuration containers */
-SySetInit(&pVm->aFiles, &pVm->sAllocator, sizeof(SyString));
-SySetInit(&pVm->aPaths, &pVm->sAllocator, sizeof(SyString));
-SySetInit(&pVm->aIncluded, &pVm->sAllocator, sizeof(SyString));
-SySetInit(&pVm->aOB, &pVm->sAllocator, sizeof(VmObEntry));
-SySetInit(&pVm->aIOstream, &pVm->sAllocator, sizeof(ph7_io_stream*));
+    SySetInit(&pVm->aFiles, &pVm->sAllocator, sizeof(SyString));
+    SySetInit(&pVm->aPaths, &pVm->sAllocator, sizeof(SyString));
+    SySetInit(&pVm->aIncluded, &pVm->sAllocator, sizeof(SyString));
+    SySetInit(&pVm->aOB, &pVm->sAllocator, sizeof(VmObEntry));
+    SySetInit(&pVm->aIOstream, &pVm->sAllocator, sizeof(ph7_io_stream*));
 /* Error callbacks containers */
-PH7_MemObjInit(&(*pVm), &pVm->aExceptionCB[0]);
-PH7_MemObjInit(&(*pVm), &pVm->aExceptionCB[1]);
-PH7_MemObjInit(&(*pVm), &pVm->aErrCB[0]);
-PH7_MemObjInit(&(*pVm), &pVm->aErrCB[1]);
-PH7_MemObjInit(&(*pVm), &pVm->sAssertCallback);
+    PH7_MemObjInit(&(*pVm), &pVm->aExceptionCB[0]);
+    PH7_MemObjInit(&(*pVm), &pVm->aExceptionCB[1]);
+    PH7_MemObjInit(&(*pVm), &pVm->aErrCB[0]);
+    PH7_MemObjInit(&(*pVm), &pVm->aErrCB[1]);
+    PH7_MemObjInit(&(*pVm), &pVm->sAssertCallback);
 /* Set a default recursion limit */
 #if defined(__WINNT__) || defined(__UNIXES__)
-pVm->nMaxDepth = 32;
+    pVm->nMaxDepth = 32;
 #else
-pVm->nMaxDepth = 16;
+    pVm->nMaxDepth = 16;
 #endif
 /* Default assertion flags */
-pVm->iAssertFlags = PH7_ASSERT_WARNING; /* Issue a warning for each failed assertion */
+    pVm->iAssertFlags = PH7_ASSERT_WARNING; /* Issue a warning for each failed assertion */
 /* JSON return status */
-pVm->json_rc = JSON_ERROR_NONE;
+    pVm->json_rc = JSON_ERROR_NONE;
 /* PRNG context */
-SyRandomnessInit(&pVm->sPrng, 0, 0);
+    SyRandomnessInit(&pVm->sPrng, 0, 0);
 /* Install the null constant */
-pObj = PH7_ReserveConstObj(&(*pVm), 0);
-if (pObj == 0)
-{
-rc = SXERR_MEM;
-goto Err;
-}
-PH7_MemObjInit(pVm, pObj);
+    pObj = PH7_ReserveConstObj(&(*pVm), 0);
+    if (pObj == 0)
+    {
+        rc = SXERR_MEM;
+        goto Err;
+    }
+    PH7_MemObjInit(pVm, pObj);
 /* Install the boolean TRUE constant */
-pObj = PH7_ReserveConstObj(&(*pVm), 0);
-if (pObj == 0)
-{
-rc = SXERR_MEM;
-goto Err;
-}
-PH7_MemObjInitFromBool(pVm, pObj, 1);
+    pObj = PH7_ReserveConstObj(&(*pVm), 0);
+    if (pObj == 0)
+    {
+        rc = SXERR_MEM;
+        goto Err;
+    }
+    PH7_MemObjInitFromBool(pVm, pObj, 1);
 /* Install the boolean FALSE constant */
-pObj = PH7_ReserveConstObj(&(*pVm), 0);
-if (pObj == 0)
-{
-rc = SXERR_MEM;
-goto Err;
-}
-PH7_MemObjInitFromBool(pVm, pObj, 0);
+    pObj = PH7_ReserveConstObj(&(*pVm), 0);
+    if (pObj == 0)
+    {
+        rc = SXERR_MEM;
+        goto Err;
+    }
+    PH7_MemObjInitFromBool(pVm, pObj, 0);
 /* Create the global frame */
-rc = VmEnterFrame(&(*pVm), 0, 0, 0);
-if (rc != SXRET_OK)
-{
-goto Err;
-}
+    rc = VmEnterFrame(&(*pVm), 0, 0, 0);
+    if (rc != SXRET_OK)
+    {
+        goto Err;
+    }
 /* Initialize the code generator */
-rc = PH7_InitCodeGenerator(pVm, pEngine->xConf.xErr, pEngine->xConf.pErrData);
-if (rc != SXRET_OK)
-{
-goto Err;
-}
+    rc = PH7_InitCodeGenerator(pVm, pEngine->xConf.xErr, pEngine->xConf.pErrData);
+    if (rc != SXRET_OK)
+    {
+        goto Err;
+    }
 /* VM correctly initialized,set the magic number */
-pVm->nMagic = PH7_VM_INIT;
-ph7_class* pClass;
+    pVm->nMagic = PH7_VM_INIT;
+    ph7_class* pClass;
 /* Compile the Throwable interface */
-SyStringInitFromBuf(&sBuiltin, PH7_BUILTIN_THROWABLE, sizeof(PH7_BUILTIN_THROWABLE) - 1);
-VmEvalChunk(&(*pVm), 0, &sBuiltin, PH7_PHP_ONLY, FALSE);
-pClass = PH7_VmExtractClass(pVm, "Throwable", sizeof("Throwable") - 1, 0, 0);
-pClass->iFlags |= PH7_CLASS_THROWABLE;
+    SyStringInitFromBuf(&sBuiltin, PH7_BUILTIN_THROWABLE, sizeof(PH7_BUILTIN_THROWABLE) - 1);
+    VmEvalChunk(&(*pVm), 0, &sBuiltin, PH7_PHP_ONLY, FALSE);
+    pClass = PH7_VmExtractClass(pVm, "Throwable", sizeof("Throwable") - 1, 0, 0);
+    pClass->iFlags |= PH7_CLASS_THROWABLE;
 /* Compile the ArrayAccess interface */
-SyStringInitFromBuf(&sBuiltin, PH7_BUILTIN_ARRAYACCESS, sizeof(PH7_BUILTIN_ARRAYACCESS) - 1);
-VmEvalChunk(&(*pVm), 0, &sBuiltin, PH7_PHP_ONLY, FALSE);
-pClass = PH7_VmExtractClass(pVm, "ArrayAccess", sizeof("ArrayAccess") - 1, 0, 0);
-pClass->iFlags |= PH7_CLASS_ARRAYACCESS;
-SyStringInitFromBuf(&sBuiltin, PH7_BUILTIN_LIB, sizeof(PH7_BUILTIN_LIB) - 1);
+    SyStringInitFromBuf(&sBuiltin, PH7_BUILTIN_ARRAYACCESS, sizeof(PH7_BUILTIN_ARRAYACCESS) - 1);
+    VmEvalChunk(&(*pVm), 0, &sBuiltin, PH7_PHP_ONLY, FALSE);
+    pClass = PH7_VmExtractClass(pVm, "ArrayAccess", sizeof("ArrayAccess") - 1, 0, 0);
+    pClass->iFlags |= PH7_CLASS_ARRAYACCESS;
+    SyStringInitFromBuf(&sBuiltin, PH7_BUILTIN_LIB, sizeof(PH7_BUILTIN_LIB) - 1);
 /* Compile the built-in library */
-VmEvalChunk(&(*pVm), 0, &sBuiltin, PH7_PHP_ONLY, FALSE);
+    VmEvalChunk(&(*pVm), 0, &sBuiltin, PH7_PHP_ONLY, FALSE);
 /* Reset the code generator */
-PH7_ResetCodeGenerator(&(*pVm), pEngine->xConf.xErr, pEngine->xConf.pErrData);
-return SXRET_OK;
-Err:
-SyMemBackendRelease(&pVm->sAllocator);
-return rc;
+    PH7_ResetCodeGenerator(&(*pVm), pEngine->xConf.xErr, pEngine->xConf.pErrData);
+    return SXRET_OK;
+    Err:
+    SyMemBackendRelease(&pVm->sAllocator);
+    return rc;
 }
 /*
  * Default VM output consumer callback.That is,all VM output is redirected to this
@@ -1557,93 +1557,93 @@ PH7_PRIVATE sxi32 PH7_VmMakeReady(
     ph7_vm* pVm /* Target VM */
 )
 {
-SyHashEntry* pEntry;
-sxi32 rc;
-if (pVm->nMagic != PH7_VM_INIT)
-{
+    SyHashEntry* pEntry;
+    sxi32 rc;
+    if (pVm->nMagic != PH7_VM_INIT)
+    {
 /* Initialize your VM first */
-return SXERR_CORRUPT;
-}
+        return SXERR_CORRUPT;
+    }
 /* Mark the VM ready for byte-code execution */
-pVm->nMagic = PH7_VM_RUN;
+    pVm->nMagic = PH7_VM_RUN;
 /* Release the code generator now we have compiled our program */
-PH7_ResetCodeGenerator(pVm, 0, 0);
+    PH7_ResetCodeGenerator(pVm, 0, 0);
 /* Emit the DONE instruction */
-rc = PH7_VmEmitInstr(&(*pVm), PH7_OP_DONE, 0, 0, 0, 0);
-if (rc != SXRET_OK)
-{
-return SXERR_MEM;
-}
+    rc = PH7_VmEmitInstr(&(*pVm), PH7_OP_DONE, 0, 0, 0, 0);
+    if (rc != SXRET_OK)
+    {
+        return SXERR_MEM;
+    }
 /* Script return value */
-PH7_MemObjInit(&(*pVm), &pVm->sExec); /* Assume a NULL return value */
+    PH7_MemObjInit(&(*pVm), &pVm->sExec); /* Assume a NULL return value */
 /* Allocate a new operand stack */
-pVm->aOps = VmNewOperandStack(&(*pVm), SySetUsed(pVm->pByteContainer));
-if (pVm->aOps == 0)
-{
-return SXERR_MEM;
-}
+    pVm->aOps = VmNewOperandStack(&(*pVm), SySetUsed(pVm->pByteContainer));
+    if (pVm->aOps == 0)
+    {
+        return SXERR_MEM;
+    }
 /* Set the default VM output consumer callback and it's
  * private data. */
-pVm->sVmConsumer.xConsumer = PH7_VmBlobConsumer;
-pVm->sVmConsumer.pUserData = &pVm->sConsumer;
+    pVm->sVmConsumer.xConsumer = PH7_VmBlobConsumer;
+    pVm->sVmConsumer.pUserData = &pVm->sConsumer;
 /* Allocate the reference table */
-pVm->nRefSize = 0x10; /* Must be a power of two for fast arithemtic */
-pVm->apRefObj = (VmRefObj**)SyMemBackendAlloc(&pVm->sAllocator, sizeof(VmRefObj*) * pVm->nRefSize);
-if (pVm->apRefObj == 0)
-{
+    pVm->nRefSize = 0x10; /* Must be a power of two for fast arithemtic */
+    pVm->apRefObj = (VmRefObj**)SyMemBackendAlloc(&pVm->sAllocator, sizeof(VmRefObj*) * pVm->nRefSize);
+    if (pVm->apRefObj == 0)
+    {
 /* Don't worry about freeing memory, everything will be released shortly */
-return SXERR_MEM;
-}
+        return SXERR_MEM;
+    }
 /* Zero the reference table */
-SyZero(pVm->apRefObj, sizeof(VmRefObj*) * pVm->nRefSize);
+    SyZero(pVm->apRefObj, sizeof(VmRefObj*) * pVm->nRefSize);
 /* Register special functions first [i.e: print, json_encode(), func_get_args(), die, etc.] */
-rc = VmRegisterSpecialFunction(&(*pVm));
-if (rc != SXRET_OK)
-{
+    rc = VmRegisterSpecialFunction(&(*pVm));
+    if (rc != SXRET_OK)
+    {
 /* Don't worry about freeing memory, everything will be released shortly */
-return rc;
-}
+        return rc;
+    }
 /* Create superglobals [i.e: $GLOBALS, $_GET, $_POST...] */
-rc = PH7_HashmapCreateSuper(&(*pVm));
-if (rc != SXRET_OK)
-{
+    rc = PH7_HashmapCreateSuper(&(*pVm));
+    if (rc != SXRET_OK)
+    {
 /* Don't worry about freeing memory, everything will be released shortly */
-return rc;
-}
+        return rc;
+    }
 /* Register built-in constants [i.e: PHP_EOL, PHP_OS...] */
-PH7_RegisterBuiltInConstant(&(*pVm));
+    PH7_RegisterBuiltInConstant(&(*pVm));
 /* Register built-in functions [i.e: is_null(), array_diff(), strlen(), etc.] */
-PH7_RegisterBuiltInFunction(&(*pVm));
+    PH7_RegisterBuiltInFunction(&(*pVm));
 /* Initialize and install static and constants class attributes */
-SyHashResetLoopCursor(&pVm->hClass);
-while ((pEntry = SyHashGetNextEntry(&pVm->hClass)) != 0)
-{
-rc = VmMountUserClass(&(*pVm), (ph7_class*)pEntry->pUserData);
-if (rc != SXRET_OK)
-{
-return rc;
-}
-}
+    SyHashResetLoopCursor(&pVm->hClass);
+    while ((pEntry = SyHashGetNextEntry(&pVm->hClass)) != 0)
+    {
+        rc = VmMountUserClass(&(*pVm), (ph7_class*)pEntry->pUserData);
+        if (rc != SXRET_OK)
+        {
+            return rc;
+        }
+    }
 /* Random number betwwen 0 and 1023 used to generate unique ID */
-pVm->unique_id = PH7_VmRandomNum(&(*pVm)) & 1023;
+    pVm->unique_id = PH7_VmRandomNum(&(*pVm)) & 1023;
 /* VM is ready for bytecode execution */
-return SXRET_OK;
+    return SXRET_OK;
 }
 /*
  * Reset a Virtual Machine to it's initial state.
  */
 PH7_PRIVATE sxi32 PH7_VmReset(ph7_vm* pVm)
 {
-if (pVm->nMagic != PH7_VM_RUN && pVm->nMagic != PH7_VM_EXEC)
-{
-return SXERR_CORRUPT;
-}
+    if (pVm->nMagic != PH7_VM_RUN && pVm->nMagic != PH7_VM_EXEC)
+    {
+        return SXERR_CORRUPT;
+    }
 /* TICKET 1433-003: As of this version, the VM is automatically reset */
-SyBlobReset(&pVm->sConsumer);
-PH7_MemObjRelease(&pVm->sExec);
+    SyBlobReset(&pVm->sConsumer);
+    PH7_MemObjRelease(&pVm->sExec);
 /* Set the ready flag */
-pVm->nMagic = PH7_VM_RUN;
-return SXRET_OK;
+    pVm->nMagic = PH7_VM_RUN;
+    return SXRET_OK;
 }
 /*
  * Release a Virtual Machine.
@@ -1652,10 +1652,10 @@ return SXRET_OK;
 PH7_PRIVATE sxi32 PH7_VmRelease(ph7_vm* pVm)
 {
 /* Set the stale magic number */
-pVm->nMagic = PH7_VM_STALE;
+    pVm->nMagic = PH7_VM_STALE;
 /* Release the private memory subsystem */
-SyMemBackendRelease(&pVm->sAllocator);
-return SXRET_OK;
+    SyMemBackendRelease(&pVm->sAllocator);
+    return SXRET_OK;
 }
 
 /*
@@ -1785,30 +1785,30 @@ static void VmPopOperand(
  */
 PH7_PRIVATE ph7_value* PH7_ReserveMemObj(ph7_vm* pVm)
 {
-ph7_value* pObj = 0;
-VmSlot* pSlot;
-sxu32 nIdx;
+    ph7_value* pObj = 0;
+    VmSlot* pSlot;
+    sxu32 nIdx;
 /* Check for a free slot */
-nIdx = SXU32_HIGH; /* cc warning */
-pSlot = (VmSlot*)SySetPop(&pVm->aFreeObj);
-if (pSlot)
-{
-pObj = (ph7_value*)SySetAt(&pVm->aMemObj, pSlot->nIdx);
-nIdx = pSlot->nIdx;
-}
-if (pObj == 0)
-{
+    nIdx = SXU32_HIGH; /* cc warning */
+    pSlot = (VmSlot*)SySetPop(&pVm->aFreeObj);
+    if (pSlot)
+    {
+        pObj = (ph7_value*)SySetAt(&pVm->aMemObj, pSlot->nIdx);
+        nIdx = pSlot->nIdx;
+    }
+    if (pObj == 0)
+    {
 /* Reserve a new memory object */
-pObj = VmReserveMemObj(&(*pVm), &nIdx);
-if (pObj == 0)
-{
-return 0;
-}
-}
+        pObj = VmReserveMemObj(&(*pVm), &nIdx);
+        if (pObj == 0)
+        {
+            return 0;
+        }
+    }
 /* Set a null default value */
-PH7_MemObjInit(&(*pVm), pObj);
-pObj->nIdx = nIdx;
-return pObj;
+    PH7_MemObjInit(&(*pVm), pObj);
+    pObj->nIdx = nIdx;
+    return pObj;
 }
 
 /*
@@ -2013,9 +2013,9 @@ static sxi32 VmHashmapInsert(
 
 /* Forward declaration */
 static sxi32 VmHttpProcessRequest(ph7_vm* pVm, const char* zRequest, int nByte);
-/*
+
+/**
  * Configure a working virtual machine instance.
- *
  * This routine is used to configure a PH7 virtual machine obtained by a prior
  * successful call to one of the compile interface such as ph7_compile()
  * ph7_compile_v2() or ph7_compile_file().
@@ -2025,370 +2025,366 @@ static sxi32 VmHttpProcessRequest(ph7_vm* pVm, const char* zRequest, int nByte);
  * argument. There are many verbs but the most important are PH7_VM_CONFIG_OUTPUT,
  * PH7_VM_CONFIG_HTTP_REQUEST and PH7_VM_CONFIG_ARGV_ENTRY.
  * Refer to the official documentation for the list of allowed verbs.
+ * @param pVm Target VM
+ * @param nOp Configuration verb
+ * @param ap Subsequent option arguments
  */
-PH7_PRIVATE sxi32 PH7_VmConfigure(
-    ph7_vm* pVm, /* Target VM */
-sxi32 nOp,   /* Configuration verb */
-va_list ap   /* Subsequent option arguments */
-)
+PH7_PRIVATE sxi32 PH7_VmConfigure(ph7_vm* pVm, sxi32 nOp, va_list ap)
 {
-sxi32 rc = SXRET_OK;
-switch (nOp)
-{
-case PH7_VM_CONFIG_OUTPUT:
-{
-ProcConsumer xConsumer = va_arg(ap, ProcConsumer);
-void* pUserData = va_arg(ap, void *);
+    sxi32 rc = SXRET_OK;
+    switch (nOp)
+    {
+        case PH7_VM_CONFIG_OUTPUT:
+        {
+            ProcConsumer xConsumer = va_arg(ap, ProcConsumer);
+            void* pUserData = va_arg(ap, void *);
 /* VM output consumer callback */
 #ifdef UNTRUST
-if (xConsumer == 0)
-{
-rc = SXERR_CORRUPT;
-break;
-}
+            if (xConsumer == 0)
+            {
+                rc = SXERR_CORRUPT;
+                break;
+            }
 #endif
 /* Install the output consumer */
-pVm->sVmConsumer.xConsumer = xConsumer;
-pVm->sVmConsumer.pUserData = pUserData;
-break;
-}
-case PH7_VM_CONFIG_IMPORT_PATH:
-{
+            pVm->sVmConsumer.xConsumer = xConsumer;
+            pVm->sVmConsumer.pUserData = pUserData;
+            break;
+        }
+        case PH7_VM_CONFIG_IMPORT_PATH:
+        {
 /* Import path */
-const char* zPath;
-SyString sPath;
-zPath = va_arg(ap, const char *);
+            const char* zPath;
+            SyString sPath;
+            zPath = va_arg(ap, const char *);
 #if defined(UNTRUST)
-if (zPath == 0)
-{
-rc = SXERR_EMPTY;
-break;
-}
+            if (zPath == 0)
+            {
+                rc = SXERR_EMPTY;
+                break;
+            }
 #endif
-SyStringInitFromBuf(&sPath, zPath, SyStrlen(zPath));
+            SyStringInitFromBuf(&sPath, zPath, SyStrlen(zPath));
 /* Remove trailing slashes and backslashes */
 #ifdef __WINNT__
-SyStringTrimTrailingChar(&sPath, '\\');
+            SyStringTrimTrailingChar(&sPath, '\\');
 #endif
-SyStringTrimTrailingChar(&sPath, '/');
+            SyStringTrimTrailingChar(&sPath, '/');
 /* Remove leading and trailing white spaces */
-SyStringFullTrim(&sPath);
-if (sPath.nByte > 0)
-{
+            SyStringFullTrim(&sPath);
+            if (sPath.nByte > 0)
+            {
 /* Store the path in the corresponding conatiner */
-rc = SySetPut(&pVm->aPaths, (const void*)&sPath);
-}
-break;
-}
-case PH7_VM_CONFIG_ERR_REPORT:
+                rc = SySetPut(&pVm->aPaths, (const void*)&sPath);
+            }
+            break;
+        }
+        case PH7_VM_CONFIG_ERR_REPORT:
 /* Run-Time Error report */
-pVm->bErrReport = 1;
-break;
-case PH7_VM_CONFIG_RECURSION_DEPTH:
-{
+            pVm->bErrReport = 1;
+            break;
+        case PH7_VM_CONFIG_RECURSION_DEPTH:
+        {
 /* Recursion depth */
-int nDepth = va_arg(ap, int);
-if (nDepth > 2 && nDepth < 1024)
-{
-pVm->nMaxDepth = nDepth;
-}
-break;
-}
-case PH7_VM_OUTPUT_LENGTH:
-{
+            int nDepth = va_arg(ap, int);
+            if (nDepth > 2 && nDepth < 1024)
+            {
+                pVm->nMaxDepth = nDepth;
+            }
+            break;
+        }
+        case PH7_VM_OUTPUT_LENGTH:
+        {
 /* VM output length in bytes */
-sxu32* pOut = va_arg(ap, sxu32 *);
+            sxu32* pOut = va_arg(ap, sxu32 *);
 #ifdef UNTRUST
-if (pOut == 0)
-{
-rc = SXERR_CORRUPT;
-break;
-}
+            if (pOut == 0)
+            {
+                rc = SXERR_CORRUPT;
+                break;
+            }
 #endif
-*pOut = pVm->nOutputLen;
-break;
-}
+            *pOut = pVm->nOutputLen;
+            break;
+        }
 
-case PH7_VM_CONFIG_CREATE_SUPER:
-case PH7_VM_CONFIG_CREATE_VAR:
-{
+        case PH7_VM_CONFIG_CREATE_SUPER:
+        case PH7_VM_CONFIG_CREATE_VAR:
+        {
 /* Create a new superglobal/global variable */
-const char* zName = va_arg(ap, const char *);
-ph7_value* pValue = va_arg(ap, ph7_value *);
-SyHashEntry* pEntry;
-ph7_value* pObj;
-sxu32 nByte;
-sxu32 nIdx;
+            const char* zName = va_arg(ap, const char *);
+            ph7_value* pValue = va_arg(ap, ph7_value *);
+            SyHashEntry* pEntry;
+            ph7_value* pObj;
+            sxu32 nByte;
+            sxu32 nIdx;
 #ifdef UNTRUST
-if (SX_EMPTY_STR(zName) || pValue == 0)
-{
-rc = SXERR_CORRUPT;
-break;
-}
+            if (SX_EMPTY_STR(zName) || pValue == 0)
+            {
+                rc = SXERR_CORRUPT;
+                break;
+            }
 #endif
-nByte = SyStrlen(zName);
-if (nOp == PH7_VM_CONFIG_CREATE_SUPER)
-{
+            nByte = SyStrlen(zName);
+            if (nOp == PH7_VM_CONFIG_CREATE_SUPER)
+            {
 /* Check if the superglobal is already installed */
-pEntry = SyHashGet(&pVm->hSuper, (const void*)zName, nByte);
-}
-else
-{
+                pEntry = SyHashGet(&pVm->hSuper, (const void*)zName, nByte);
+            }
+            else
+            {
 /* Query the top active VM frame */
-pEntry = SyHashGet(&pVm->pFrame->hVar, (const void*)zName, nByte);
-}
-if (pEntry != NULL)
-{
+                pEntry = SyHashGet(&pVm->pFrame->hVar, (const void*)zName, nByte);
+            }
+            if (pEntry != NULL)
+            {
 /* Variable already installed */
-nIdx = SX_PTR_TO_INT(pEntry->pUserData);
+                nIdx = SX_PTR_TO_INT(pEntry->pUserData);
 /* Extract contents */
-pObj = (ph7_value*)SySetAt(&pVm->aMemObj, nIdx);
-if (pObj)
-{
+                pObj = (ph7_value*)SySetAt(&pVm->aMemObj, nIdx);
+                if (pObj)
+                {
 /* Overwrite old contents */
-PH7_MemObjStore(pValue, pObj);
-}
-}
-else
-{
+                    PH7_MemObjStore(pValue, pObj);
+                }
+            }
+            else
+            {
 /* Install a new variable */
-pObj = PH7_ReserveMemObj(&(*pVm));
-if (pObj == 0)
-{
-rc = SXERR_MEM;
-break;
-}
-nIdx = pObj->nIdx;
+                pObj = PH7_ReserveMemObj(&(*pVm));
+                if (pObj == 0)
+                {
+                    rc = SXERR_MEM;
+                    break;
+                }
+                nIdx = pObj->nIdx;
 /* Copy value */
-PH7_MemObjStore(pValue, pObj);
-if (nOp == PH7_VM_CONFIG_CREATE_SUPER)
-{
+                PH7_MemObjStore(pValue, pObj);
+                if (nOp == PH7_VM_CONFIG_CREATE_SUPER)
+                {
 /* Install the superglobal */
-rc = SyHashInsert(&pVm->hSuper, (const void*)zName, nByte, SX_INT_TO_PTR(nIdx));
-}
-else
-{
+                    rc = SyHashInsert(&pVm->hSuper, (const void*)zName, nByte, SX_INT_TO_PTR(nIdx));
+                }
+                else
+                {
 /* Install in the current frame */
-rc = SyHashInsert(&pVm->pFrame->hVar, (const void*)zName, nByte, SX_INT_TO_PTR(nIdx));
-}
-if (rc == SXRET_OK)
-{
-SyHashEntry* pRef;
-if (nOp == PH7_VM_CONFIG_CREATE_SUPER)
-{
-pRef = SyHashLastEntry(&pVm->hSuper);
-}
-else
-{
-pRef = SyHashLastEntry(&pVm->pFrame->hVar);
-}
+                    rc = SyHashInsert(&pVm->pFrame->hVar, (const void*)zName, nByte, SX_INT_TO_PTR(nIdx));
+                }
+                if (rc == SXRET_OK)
+                {
+                    SyHashEntry* pRef;
+                    if (nOp == PH7_VM_CONFIG_CREATE_SUPER)
+                    {
+                        pRef = SyHashLastEntry(&pVm->hSuper);
+                    }
+                    else
+                    {
+                        pRef = SyHashLastEntry(&pVm->pFrame->hVar);
+                    }
 /* Install in the reference table */
-PH7_VmRefObjInstall(&(*pVm), nIdx, pRef, 0, 0);
-if (nOp == PH7_VM_CONFIG_CREATE_SUPER || pVm->pFrame->pParent == 0)
-{
+                    PH7_VmRefObjInstall(&(*pVm), nIdx, pRef, 0, 0);
+                    if (nOp == PH7_VM_CONFIG_CREATE_SUPER || pVm->pFrame->pParent == 0)
+                    {
 /* Register in the $GLOBALS array */
-VmHashmapRefInsert(pVm->pGlobal, zName, nByte, nIdx);
-}
-}
-}
-break;
-}
-case PH7_VM_CONFIG_SERVER_ATTR:
-case PH7_VM_CONFIG_ENV_ATTR:
-case PH7_VM_CONFIG_SESSION_ATTR:
-case PH7_VM_CONFIG_POST_ATTR:
-case PH7_VM_CONFIG_GET_ATTR:
-case PH7_VM_CONFIG_COOKIE_ATTR:
-case PH7_VM_CONFIG_HEADER_ATTR:
-{
-const char* zKey = va_arg(ap, const char *);
-const char* zValue = va_arg(ap, const char *);
-int nLen = va_arg(ap, int);
-ph7_hashmap* pMap;
-ph7_value* pValue;
-if (nOp == PH7_VM_CONFIG_ENV_ATTR)
-{
+                        VmHashmapRefInsert(pVm->pGlobal, zName, nByte, nIdx);
+                    }
+                }
+            }
+            break;
+        }
+        case PH7_VM_CONFIG_SERVER_ATTR:
+        case PH7_VM_CONFIG_ENV_ATTR:
+        case PH7_VM_CONFIG_SESSION_ATTR:
+        case PH7_VM_CONFIG_POST_ATTR:
+        case PH7_VM_CONFIG_GET_ATTR:
+        case PH7_VM_CONFIG_COOKIE_ATTR:
+        case PH7_VM_CONFIG_HEADER_ATTR:
+        {
+            const char* zKey = va_arg(ap, const char *);
+            const char* zValue = va_arg(ap, const char *);
+            int nLen = va_arg(ap, int);
+            ph7_hashmap* pMap;
+            ph7_value* pValue;
+            if (nOp == PH7_VM_CONFIG_ENV_ATTR)
+            {
 /* Extract the $_ENV superglobal */
-pValue = VmExtractSuper(&(*pVm), "_ENV", sizeof("_ENV") - 1);
-}
-else if (nOp == PH7_VM_CONFIG_POST_ATTR)
-{
+                pValue = VmExtractSuper(&(*pVm), "_ENV", sizeof("_ENV") - 1);
+            }
+            else if (nOp == PH7_VM_CONFIG_POST_ATTR)
+            {
 /* Extract the $_POST superglobal */
-pValue = VmExtractSuper(&(*pVm), "_POST", sizeof("_POST") - 1);
-}
-else if (nOp == PH7_VM_CONFIG_GET_ATTR)
-{
+                pValue = VmExtractSuper(&(*pVm), "_POST", sizeof("_POST") - 1);
+            }
+            else if (nOp == PH7_VM_CONFIG_GET_ATTR)
+            {
 /* Extract the $_GET superglobal */
-pValue = VmExtractSuper(&(*pVm), "_GET", sizeof("_GET") - 1);
-}
-else if (nOp == PH7_VM_CONFIG_COOKIE_ATTR)
-{
+                pValue = VmExtractSuper(&(*pVm), "_GET", sizeof("_GET") - 1);
+            }
+            else if (nOp == PH7_VM_CONFIG_COOKIE_ATTR)
+            {
 /* Extract the $_COOKIE superglobal */
-pValue = VmExtractSuper(&(*pVm), "_COOKIE", sizeof("_COOKIE") - 1);
-}
-else if (nOp == PH7_VM_CONFIG_SESSION_ATTR)
-{
+                pValue = VmExtractSuper(&(*pVm), "_COOKIE", sizeof("_COOKIE") - 1);
+            }
+            else if (nOp == PH7_VM_CONFIG_SESSION_ATTR)
+            {
 /* Extract the $_SESSION superglobal */
-pValue = VmExtractSuper(&(*pVm), "_SESSION", sizeof("_SESSION") - 1);
-}
-else if (nOp == PH7_VM_CONFIG_HEADER_ATTR)
-{
+                pValue = VmExtractSuper(&(*pVm), "_SESSION", sizeof("_SESSION") - 1);
+            }
+            else if (nOp == PH7_VM_CONFIG_HEADER_ATTR)
+            {
 /* Extract the $_HEADER superglobale */
-pValue = VmExtractSuper(&(*pVm), "_HEADER", sizeof("_HEADER") - 1);
-}
-else
-{
+                pValue = VmExtractSuper(&(*pVm), "_HEADER", sizeof("_HEADER") - 1);
+            }
+            else
+            {
 /* Extract the $_SERVER superglobal */
-pValue = VmExtractSuper(&(*pVm), "_SERVER", sizeof("_SERVER") - 1);
-}
-if (pValue == 0 || (pValue->iFlags & MEMOBJ_HASHMAP) == 0)
-{
+                pValue = VmExtractSuper(&(*pVm), "_SERVER", sizeof("_SERVER") - 1);
+            }
+            if (pValue == 0 || (pValue->iFlags & MEMOBJ_HASHMAP) == 0)
+            {
 /* No such entry */
-rc = SXERR_NOTFOUND;
-break;
-}
+                rc = SXERR_NOTFOUND;
+                break;
+            }
 /* Point to the hashmap */
-pMap = (ph7_hashmap*)pValue->x.pOther;
+            pMap = (ph7_hashmap*)pValue->x.pOther;
 /* Perform the insertion */
-rc = VmHashmapInsert(pMap, zKey, -1, zValue, nLen);
-break;
-}
-case PH7_VM_CONFIG_ARGV_ENTRY:
-{
+            rc = VmHashmapInsert(pMap, zKey, -1, zValue, nLen);
+            break;
+        }
+        case PH7_VM_CONFIG_ARGV_ENTRY:
+        {
 /* Script arguments */
-const char* zValue = va_arg(ap, const char *);
-ph7_hashmap* pMap;
-ph7_value* pValue;
-sxu32 n;
-if (SX_EMPTY_STR(zValue))
-{
-rc = SXERR_EMPTY;
-break;
-}
+            const char* zValue = va_arg(ap, const char *);
+            ph7_hashmap* pMap;
+            ph7_value* pValue;
+            sxu32 n;
+            if (SX_EMPTY_STR(zValue))
+            {
+                rc = SXERR_EMPTY;
+                break;
+            }
 /* Extract the $argv array */
-pValue = VmExtractSuper(&(*pVm), "argv", sizeof("argv") - 1);
-if (pValue == 0 || (pValue->iFlags & MEMOBJ_HASHMAP) == 0)
-{
+            pValue = VmExtractSuper(&(*pVm), "argv", sizeof("argv") - 1);
+            if (pValue == 0 || (pValue->iFlags & MEMOBJ_HASHMAP) == 0)
+            {
 /* No such entry */
-rc = SXERR_NOTFOUND;
-break;
-}
+                rc = SXERR_NOTFOUND;
+                break;
+            }
 /* Point to the hashmap */
-pMap = (ph7_hashmap*)pValue->x.pOther;
+            pMap = (ph7_hashmap*)pValue->x.pOther;
 /* Perform the insertion */
-n = (sxu32)SyStrlen(zValue);
-rc = VmHashmapInsert(pMap, 0, 0, zValue, (int)n);
-if (rc == SXRET_OK)
-{
-if (pMap->nEntry > 1)
-{
+            n = (sxu32)SyStrlen(zValue);
+            rc = VmHashmapInsert(pMap, 0, 0, zValue, (int)n);
+            if (rc == SXRET_OK)
+            {
+                if (pMap->nEntry > 1)
+                {
 /* Append space separator first */
-SyBlobAppend(&pVm->sArgv, (const void*)" ", sizeof(char));
-}
-SyBlobAppend(&pVm->sArgv, (const void*)zValue, n);
-}
-break;
-}
-case PH7_VM_CONFIG_ERR_LOG_HANDLER:
-{
+                    SyBlobAppend(&pVm->sArgv, (const void*)" ", sizeof(char));
+                }
+                SyBlobAppend(&pVm->sArgv, (const void*)zValue, n);
+            }
+            break;
+        }
+        case PH7_VM_CONFIG_ERR_LOG_HANDLER:
+        {
 /* error_log() consumer */
-ProcErrLog xErrLog = va_arg(ap, ProcErrLog);
-pVm->xErrLog = xErrLog;
-break;
-}
-case PH7_VM_CONFIG_EXEC_VALUE:
-{
+            ProcErrLog xErrLog = va_arg(ap, ProcErrLog);
+            pVm->xErrLog = xErrLog;
+            break;
+        }
+        case PH7_VM_CONFIG_EXEC_VALUE:
+        {
 /* Script return value */
-ph7_value** ppValue = va_arg(ap, ph7_value **);
+            ph7_value** ppValue = va_arg(ap, ph7_value **);
 #ifdef UNTRUST
-if (ppValue == 0)
-{
-rc = SXERR_CORRUPT;
-break;
-}
+            if (ppValue == 0)
+            {
+                rc = SXERR_CORRUPT;
+                break;
+            }
 #endif
-*ppValue = &pVm->sExec;
-break;
-}
-case PH7_VM_CONFIG_IO_STREAM:
-{
+            *ppValue = &pVm->sExec;
+            break;
+        }
+        case PH7_VM_CONFIG_IO_STREAM:
+        {
 /* Register an IO stream device */
-const ph7_io_stream* pStream = va_arg(ap, const ph7_io_stream *);
+            const ph7_io_stream* pStream = va_arg(ap, const ph7_io_stream *);
 /* Make sure we are dealing with a valid IO stream */
-if (pStream == 0 || pStream->zName == 0 || pStream->zName[0] == 0 ||
-pStream->xOpen == 0 || pStream->xRead == 0)
-{
+            if (pStream == 0 || pStream->zName == 0 || pStream->zName[0] == 0 ||
+                pStream->xOpen == 0 || pStream->xRead == 0)
+            {
 /* Invalid stream */
-rc = SXERR_INVALID;
-break;
-}
-if (pVm->pDefStream == 0 && SyStrnicmp(pStream->zName, "file", sizeof("file") - 1) == 0)
-{
+                rc = SXERR_INVALID;
+                break;
+            }
+            if (pVm->pDefStream == 0 && SyStrnicmp(pStream->zName, "file", sizeof("file") - 1) == 0)
+            {
 /* Make the 'file://' stream the defaut stream device */
-pVm->pDefStream = pStream;
-}
+                pVm->pDefStream = pStream;
+            }
 /* Insert in the appropriate container */
-rc = SySetPut(&pVm->aIOstream, (const void*)&pStream);
-break;
-}
-case PH7_VM_CONFIG_EXTRACT_OUTPUT:
-{
+            rc = SySetPut(&pVm->aIOstream, (const void*)&pStream);
+            break;
+        }
+        case PH7_VM_CONFIG_EXTRACT_OUTPUT:
+        {
 /* Point to the VM internal output consumer buffer */
-const void** ppOut = va_arg(ap, const void **);
-unsigned int* pLen = va_arg(ap, unsigned int *);
+            const void** ppOut = va_arg(ap, const void **);
+            unsigned int* pLen = va_arg(ap, unsigned int *);
 #ifdef UNTRUST
-if (ppOut == 0 || pLen == 0)
-{
-rc = SXERR_CORRUPT;
-break;
-}
+            if (ppOut == 0 || pLen == 0)
+            {
+                rc = SXERR_CORRUPT;
+                break;
+            }
 #endif
-*ppOut = SyBlobData(&pVm->sConsumer);
-*pLen = SyBlobLength(&pVm->sConsumer);
-break;
-}
-case PH7_VM_CONFIG_HTTP_REQUEST:
-{
+            *ppOut = SyBlobData(&pVm->sConsumer);
+            *pLen = SyBlobLength(&pVm->sConsumer);
+            break;
+        }
+        case PH7_VM_CONFIG_HTTP_REQUEST:
+        {
 /* Raw HTTP request*/
-const char* zRequest = va_arg(ap, const char *);
-int nByte = va_arg(ap, int);
-if (SX_EMPTY_STR(zRequest))
-{
-rc = SXERR_EMPTY;
-break;
-}
-if (nByte < 0)
-{
+            const char* zRequest = va_arg(ap, const char *);
+            int nByte = va_arg(ap, int);
+            if (SX_EMPTY_STR(zRequest))
+            {
+                rc = SXERR_EMPTY;
+                break;
+            }
+            if (nByte < 0)
+            {
 /* Compute length automatically */
-nByte = (int)SyStrlen(zRequest);
-}
+                nByte = (int)SyStrlen(zRequest);
+            }
 /* Process the request */
-rc = VmHttpProcessRequest(&(*pVm), zRequest, nByte);
-break;
-}
-default:
+            rc = VmHttpProcessRequest(&(*pVm), zRequest, nByte);
+            break;
+        }
+        default:
 /* Unknown configuration option */
-rc = SXERR_UNKNOWN;
-break;
-}
-return rc;
+            rc = SXERR_UNKNOWN;
+            break;
+    }
+    return rc;
 }
 
 /* Forward declaration */
 static const char* VmInstrToString(sxi32 nOp);
 
-/*
- * This routine is used to dump PH7 byte-code instructions to a human readable
- * format.
+/**
+ * This routine is used to dump PH7 byte-code instructions to a human readable format.
  * The dump is redirected to the given consumer callback which is responsible
- * of consuming the generated dump perhaps redirecting it to its standard output
- * (STDOUT).
+ * of consuming the generated dump perhaps redirecting it to its standard output (STDOUT).
+ * @param pByteCode Bytecode container
+ * @param xConsumer Dump consumer callback
+ * @param pUserData Last argument to xConsumer()
  */
-static sxi32 VmByteCodeDump(
-    SySet* pByteCode,       /* Bytecode container */
-    ProcConsumer xConsumer, /* Dump consumer callback */
-    void* pUserData         /* Last argument to xConsumer() */
-)
+static sxi32 VmByteCodeDump(SySet* pByteCode, ProcConsumer xConsumer, void* pUserData)
 {
     static const char zDump[] = {
         "====================================================\n"
@@ -2434,9 +2430,8 @@ static sxi32 VmUncaughtException(ph7_vm* pVm, ph7_class_instance* pThis);
 
 static sxi32 VmThrowException(ph7_vm* pVm, ph7_class_instance* pThis);
 
-/*
- * Consume a generated run-time error message by invoking the VM output
- * consumer callback.
+/**
+ * Consume a generated run-time error message by invoking the VM output consumer callback.
  */
 static sxi32 VmCallErrorHandler(ph7_vm* pVm, SyBlob* pMsg)
 {
@@ -2455,77 +2450,87 @@ static sxi32 VmCallErrorHandler(ph7_vm* pVm, SyBlob* pMsg)
         /* Increment output length */
         pVm->nOutputLen += SyBlobLength(pMsg);
     }
+
     return rc;
 }
-/*
+
+/**
  * Throw a run-time error and invoke the supplied VM output consumer callback.
- * Refer to the implementation of [ph7_context_throw_error()] for additional
- * information.
- */
+ * Refer to the implementation of [ph7_context_throw_error()] for additional information.
+  * @param pVm Target VM
+  * @param pFuncName Function name. NULL otherwise
+  * @param iErr Severity level: [i.e: Error,Warning or Notice]
+  * @param zMessage Null terminated error message
+  */
 PH7_PRIVATE sxi32 PH7_VmThrowError(
-    ph7_vm* pVm,         /* Target VM */
-SyString* pFuncName, /* Function name. NULL otherwise */
-sxi32 iErr,          /* Severity level: [i.e: Error,Warning or Notice]*/
-const char* zMessage /* Null terminated error message */
-)
+    ph7_vm* pVm,
+    SyString* pFuncName,
+    sxi32 iErr,
+    const char* zMessage)
 {
-SyBlob* pWorker = &pVm->sWorker;
-SyString* pFile;
-char* zErr;
-sxi32 rc;
-if (!pVm->bErrReport)
-{
+    SyBlob* pWorker = &pVm->sWorker;
+    SyString* pFile;
+    char* zErr;
+    sxi32 rc;
+    if (!pVm->bErrReport)
+    {
 /* Don't bother reporting errors */
-return SXRET_OK;
-}
+        return SXRET_OK;
+    }
 /* Reset the working buffer */
-SyBlobReset(pWorker);
+    SyBlobReset(pWorker);
 /* Peek the processed file if available */
-pFile = (SyString*)SySetPeek(&pVm->aFiles);
-if (pFile)
-{
+    pFile = (SyString*)SySetPeek(&pVm->aFiles);
+    if (pFile)
+    {
 /* Append file name */
-SyBlobAppend(pWorker, pFile->zString, pFile->nByte);
-SyBlobAppend(pWorker, (const void*)" ", sizeof(char));
-}
-zErr = "Error: ";
-switch (iErr)
-{
-case PH7_CTX_WARNING:
-zErr = "Warning: ";
-break;
-case PH7_CTX_NOTICE:
-zErr = "Notice: ";
-break;
-default:
-iErr = PH7_CTX_ERR;
-break;
-}
-SyBlobAppend(pWorker, zErr, SyStrlen(zErr));
-if (pFuncName)
-{
+        SyBlobAppend(pWorker, pFile->zString, pFile->nByte);
+        SyBlobAppend(pWorker, (const void*)" ", sizeof(char));
+    }
+    zErr = "Error: ";
+    switch (iErr)
+    {
+        case PH7_CTX_WARNING:
+            zErr = "Warning: ";
+            break;
+        case PH7_CTX_NOTICE:
+            zErr = "Notice: ";
+            break;
+        default:
+            iErr = PH7_CTX_ERR;
+            break;
+    }
+    SyBlobAppend(pWorker, zErr, SyStrlen(zErr));
+    if (pFuncName)
+    {
 /* Append function name first */
-SyBlobAppend(pWorker, pFuncName->zString, pFuncName->nByte);
-SyBlobAppend(pWorker, "(): ", sizeof("(): ") - 1);
-}
-SyBlobAppend(pWorker, zMessage, SyStrlen(zMessage));
+        SyBlobAppend(pWorker, pFuncName->zString, pFuncName->nByte);
+        SyBlobAppend(pWorker, "(): ", sizeof("(): ") - 1);
+    }
+    SyBlobAppend(pWorker, zMessage, SyStrlen(zMessage));
 /* Consume the error message */
-rc = VmCallErrorHandler(&(*pVm), pWorker);
-return rc;
+    rc = VmCallErrorHandler(&(*pVm), pWorker);
+
+    return rc;
 }
 
 /*
  * Format and throw a run-time error and invoke the supplied VM output consumer callback.
- * Refer to the implementation of [ph7_context_throw_error_format()] for additional
- * information.
+ * Refer to the implementation of [ph7_context_throw_error_format()] for additional information.
+ */
+/**
+ * @param pVm Target VM
+ * @param pFuncName Function name. NULL otherwise
+ * @param iErr Severity level: [i.e: Error,Warning or Notice]
+ * @param zFormat Format message
+ * @param ap Variable list of arguments
  */
 static sxi32 VmThrowErrorAp(
-    ph7_vm* pVm,         /* Target VM */
-    SyString* pFuncName, /* Function name. NULL otherwise */
-    sxi32 iErr,          /* Severity level: [i.e: Error,Warning or Notice] */
-    const char* zFormat, /* Format message */
-    va_list ap           /* Variable list of arguments */
-)
+    ph7_vm* pVm,
+    SyString* pFuncName,
+    sxi32 iErr,
+    const char* zFormat,
+    va_list ap)
 {
     SyBlob* pWorker = &pVm->sWorker;
     SyString* pFile;
@@ -2569,13 +2574,13 @@ static sxi32 VmThrowErrorAp(
     SyBlobFormatAp(pWorker, zFormat, ap);
     /* Consume the error message */
     rc = VmCallErrorHandler(&(*pVm), pWorker);
+
     return rc;
 }
 
-/*
+/**
  * Format and throw a run-time error and invoke the supplied VM output consumer callback.
- * Refer to the implementation of [ph7_context_throw_error_format()] for additional
- * information.
+ * Refer to the implementation of [ph7_context_throw_error_format()] for additional information.
  * ------------------------------------
  * Simple boring wrapper function.
  * ------------------------------------
@@ -2587,9 +2592,11 @@ static sxi32 VmErrorFormat(ph7_vm* pVm, sxi32 iErr, const char* zFormat, ...)
     va_start(ap, zFormat);
     rc = VmThrowErrorAp(&(*pVm), 0, iErr, zFormat, ap);
     va_end(ap);
+
     return rc;
 }
-/*
+
+/**
  * Format and throw a run-time error and invoke the supplied VM output consumer callback.
  * Refer to the implementation of [ph7_context_throw_error_format()] for additional
  * information.
@@ -2599,12 +2606,12 @@ static sxi32 VmErrorFormat(ph7_vm* pVm, sxi32 iErr, const char* zFormat, ...)
  */
 PH7_PRIVATE sxi32 PH7_VmThrowErrorAp(ph7_vm* pVm, SyString* pFuncName, sxi32 iErr, const char* zFormat, va_list ap)
 {
-sxi32 rc;
-rc = VmThrowErrorAp(&(*pVm), &(*pFuncName), iErr, zFormat, ap);
-return rc;
+    sxi32 rc;
+    rc = VmThrowErrorAp(&(*pVm), &(*pFuncName), iErr, zFormat, ap);
+    return rc;
 }
 
-/*
+/**
  * Execute as much of a PH7 bytecode program as we can then return.
  *
  * [PH7_VmMakeReady()] must be called before this routine in order to
@@ -2616,16 +2623,22 @@ return rc;
  * After this routine has finished, [PH7_VmRelease()] or [PH7_VmReset()]
  * should be used respectively to clean up the mess that was left behind
  * or to reset the VM to it's initial state.
+ * @param pVm Target VM
+ * @param aInstr PH7 bytecode program
+ * @param pStack Operand stack
+ * @param nTos Top entry in the operand stack (usually -1)
+ * @param pResult Store program return value here. NULL otherwise
+ * @param pLastRef Last referenced ph7_value index
+ * @param is_callback TRUE if we are executing a callback
  */
 static sxi32 VmByteCodeExec(
-    ph7_vm* pVm,         /* Target VM */
-    VmInstr* aInstr,     /* PH7 bytecode program */
-    ph7_value* pStack,   /* Operand stack */
-    int nTos,            /* Top entry in the operand stack (usually -1) */
-    ph7_value* pResult,  /* Store program return value here. NULL otherwise */
-    sxu32* pLastRef,     /* Last referenced ph7_value index */
-    int is_callback      /* TRUE if we are executing a callback */
-)
+    ph7_vm* pVm,
+    VmInstr* aInstr,
+    ph7_value* pStack,
+    int nTos,
+    ph7_value* pResult,
+    sxu32* pLastRef,
+    int is_callback)
 {
     VmInstr* pInstr;
     ph7_value* pTos;
@@ -2689,12 +2702,9 @@ static sxi32 VmByteCodeExec(
                 }
                 goto Done;
             }
-/*
- * HALT: P1 * *
- *
- * Program execution aborted: Clean up the mess left behind
- * and abort immediately.
- */
+            // HALT: P1 * *
+            // Program execution aborted: Clean up the mess left behind
+            // and abort immediately.
             case PH7_OP_HALT:
             {
                 if (pInstr->iP1)
@@ -2737,23 +2747,18 @@ static sxi32 VmByteCodeExec(
                 }
                 goto Abort;
             }
-/*
- * JMP: * P2 *
- *
- * Unconditional jump: The next instruction executed will be
- * the one at index P2 from the beginning of the program.
- */
+            // JMP: * P2 *
+            // Unconditional jump: The next instruction executed will be
+            // the one at index P2 from the beginning of the program.
+            //
             case PH7_OP_JMP:
             {
                 pc = pInstr->iP2 - 1;
                 break;
             }
-/*
- * JZ: P1 P2 *
- *
- * Take the jump if the top value is zero (FALSE jump).Pop the top most
- * entry in the stack if P1 is zero.
- */
+            // JZ: P1 P2 *
+            // Take the jump if the top value is zero (FALSE jump).Pop the top most
+            // entry in the stack if P1 is zero.
             case PH7_OP_JZ:
             {
 #ifdef UNTRUST
@@ -2778,12 +2783,9 @@ static sxi32 VmByteCodeExec(
                 }
                 break;
             }
-/*
- * JNZ: P1 P2 *
- *
- * Take the jump if the top value is not zero (TRUE jump).Pop the top most
- * entry in the stack if P1 is zero.
- */
+            // JNZ: P1 P2 *
+            // Take the jump if the top value is not zero (TRUE jump).Pop the top most
+            // entry in the stack if P1 is zero.
             case PH7_OP_JNZ:
             {
 #ifdef UNTRUST
@@ -2808,19 +2810,12 @@ static sxi32 VmByteCodeExec(
                 }
                 break;
             }
-/*
- * NOOP: * * *
- *
- * Do nothing. This instruction is often useful as a jump
- * destination.
- */
+            // NOOP: * * *
+            // Do nothing. This instruction is often useful as a jump destination.
             case PH7_OP_NOOP:
                 break;
-/*
- * POP: P1 * *
- *
- * Pop P1 elements from the operand stack.
- */
+            // POP: P1 * *
+            // Pop P1 elements from the operand stack.
             case PH7_OP_POP:
             {
                 sxi32 n = pInstr->iP1;
@@ -2832,11 +2827,8 @@ static sxi32 VmByteCodeExec(
                 VmPopOperand(&pTos, n);
                 break;
             }
-/*
- * CVT_INT: * * *
- *
- * Force the top of the stack to be an integer.
- */
+            // CVT_INT: * * *
+            // Force the top of the stack to be an integer.
             case PH7_OP_CVT_INT:
             {
 #ifdef UNTRUST
@@ -2853,11 +2845,8 @@ static sxi32 VmByteCodeExec(
                 MemObjSetType(pTos, MEMOBJ_INT);
                 break;
             }
-/*
- * CVT_REAL: * * *
- *
- * Force the top of the stack to be a real.
- */
+            // CVT_REAL: * * *
+            // Force the top of the stack to be a real.
             case PH7_OP_CVT_REAL:
             {
 #ifdef UNTRUST
@@ -2874,11 +2863,8 @@ static sxi32 VmByteCodeExec(
                 MemObjSetType(pTos, MEMOBJ_REAL);
                 break;
             }
-/*
- * CVT_STR: * * *
- *
- * Force the top of the stack to be a string.
- */
+            // CVT_STR: * * *
+            // Force the top of the stack to be a string.
             case PH7_OP_CVT_STR:
             {
 #ifdef UNTRUST
@@ -2893,11 +2879,8 @@ static sxi32 VmByteCodeExec(
                 }
                 break;
             }
-/*
- * CVT_BOOL: * * *
- *
- * Force the top of the stack to be a boolean.
- */
+            // CVT_BOOL: * * *
+            // Force the top of the stack to be a boolean.
             case PH7_OP_CVT_BOOL:
             {
 #ifdef UNTRUST
@@ -3612,7 +3595,7 @@ static sxi32 VmByteCodeExec(
                     pKey = 0;
                 }
                 nIdx = pTos->nIdx;
-                if (pTos->iFlags & MEMOBJ_HASHMAP)
+                if ((pTos->iFlags & MEMOBJ_HASHMAP) != 0)
                 {
                     /* Hashmap already loaded */
                     pMap = (ph7_hashmap*)pTos->x.pOther;
@@ -3636,7 +3619,7 @@ static sxi32 VmByteCodeExec(
                         break;
                     }
                     /* Phase#1: Load the array */
-                    if ((pObj->iFlags & MEMOBJ_STRING) && (pInstr->iOp != PH7_OP_STORE_IDX_REF))
+                    if ((pObj->iFlags & MEMOBJ_STRING) != 0 && pInstr->iOp != PH7_OP_STORE_IDX_REF)
                     {
                         VmPopOperand(&pTos, 1);
                         if ((pTos->iFlags & MEMOBJ_STRING) == 0)
@@ -3655,7 +3638,7 @@ static sxi32 VmByteCodeExec(
                         else
                         {
                             sxu32 nOfft;
-                            if ((pKey->iFlags & MEMOBJ_INT))
+                            if ((pKey->iFlags & MEMOBJ_INT) != 0)
                             {
                                 /* Force an int cast */
                                 PH7_MemObjToInteger(pKey);
@@ -3681,28 +3664,33 @@ static sxi32 VmByteCodeExec(
                             PH7_MemObjRelease(pKey);
                         }
                     }
-                    else if (pObj->iFlags & MEMOBJ_OBJ)
+                    else if ((pObj->iFlags & MEMOBJ_OBJ) != 0)
                     {
                         /* Treat class instance as array, where the key is an attribute */
                         ph7_class_instance* pThis;
                         ph7_class* pClass;
                         pThis = (ph7_class_instance*)pObj->x.pOther;
                         pClass = pThis->pClass;
-                        if (pKey == 0 || (pKey->iFlags & MEMOBJ_NULL))
-                        { /* '$a[]=1;' or '$a[NULL]=1;' */
+                        if (pKey == 0 || (pKey->iFlags & MEMOBJ_NULL) != 0)
+                        {
+                            /* '$a[]=1;' or '$a[NULL]=1;' */
                             /* Key is empty, append element to object */
-
                             break;
                         }
-                        else if ((pKey->iFlags & MEMOBJ_INT))
+                        else if ((pKey->iFlags & MEMOBJ_INT) != 0)
                         {
                             /* Key is an integer */
                             /* Force an int cast */
-                            sxu32 nOfft;
                             PH7_MemObjToInteger(pKey);
-                            nOfft = (sxu32)pKey->x.iVal;
-                            PH7_ClassInstanceCallMagicMethod(&(*pVm), pClass, pThis, "offsetSet",
-                                                             sizeof("offsetSet") - 1, &pKey, 0);
+                            sxu32 nOfft = (sxu32)pKey->x.iVal;
+                            PH7_ClassInstanceCallMagicMethod(
+                                &(*pVm),
+                                pClass,
+                                pThis,
+                                "offsetSet",
+                                sizeof("offsetSet") - 1,
+                                &pKey,
+                                0);
 
                         }
                         else if ((pKey->iFlags & MEMOBJ_STRING))
@@ -6261,7 +6249,7 @@ static sxi32 VmByteCodeExec(
                         PH7_MemObjInit(pVm, &sResult);
                         /* May be a class instance and it's static method */
                         PH7_VmCallUserFunction(pVm, pTos, (int)SySetUsed(&aArg), (ph7_value**)SySetBasePtr(&aArg),
-                            &sResult);
+                                               &sResult);
                         SySetReset(&aArg);
                         /* Pop given arguments */
                         if (pInstr->iP1 > 0)
@@ -6684,8 +6672,8 @@ static sxi32 VmByteCodeExec(
                     pVm->nRecursionDepth++;
                     /* Execute function body */
                     rc = VmByteCodeExec(&(*pVm), (VmInstr*)SySetBasePtr(&pVmFunc->aByteCode), pFrameStack, -1, pTos,
-                        &n,
-                        FALSE);
+                                        &n,
+                                        FALSE);
                     /* Decrement nesting level */
                     pVm->nRecursionDepth--;
                     if (pSelf)
@@ -6977,22 +6965,22 @@ static void VmInvokeShutdownCallbacks(ph7_vm* pVm)
 PH7_PRIVATE sxi32 PH7_VmByteCodeExec(ph7_vm* pVm)
 {
 /* Make sure we are ready to execute this program */
-if (pVm->nMagic != PH7_VM_RUN)
-{
-return pVm->nMagic == PH7_VM_EXEC ? SXERR_LOCKED /* Locked VM */ : SXERR_CORRUPT; /* Stale VM */
-}
+    if (pVm->nMagic != PH7_VM_RUN)
+    {
+        return pVm->nMagic == PH7_VM_EXEC ? SXERR_LOCKED /* Locked VM */ : SXERR_CORRUPT; /* Stale VM */
+    }
 /* Set the execution magic number  */
-pVm->nMagic = PH7_VM_EXEC;
+    pVm->nMagic = PH7_VM_EXEC;
 /* Execute the program */
-VmByteCodeExec(&(*pVm), (VmInstr*)SySetBasePtr(pVm->pByteContainer), pVm->aOps, -1, &pVm->sExec, 0, FALSE);
+    VmByteCodeExec(&(*pVm), (VmInstr*)SySetBasePtr(pVm->pByteContainer), pVm->aOps, -1, &pVm->sExec, 0, FALSE);
 /* Invoke any shutdown callbacks */
-VmInvokeShutdownCallbacks(&(*pVm));
+    VmInvokeShutdownCallbacks(&(*pVm));
 /*
  * TICKET 1433-100: Do not remove the PH7_VM_EXEC magic number
  * so that any following call to [ph7_vm_exec()] without calling
  * [ph7_vm_reset()] first would fail.
  */
-return SXRET_OK;
+    return SXRET_OK;
 }
 /*
  * Invoke the installed VM output consumer callback to consume
@@ -7002,22 +6990,22 @@ return SXRET_OK;
  */
 PH7_PRIVATE sxi32 PH7_VmOutputConsume(
     ph7_vm* pVm,      /* Target VM */
-SyString* pString /* Message to output */
+    SyString* pString /* Message to output */
 )
 {
-ph7_output_consumer* pCons = &pVm->sVmConsumer;
-sxi32 rc = SXRET_OK;
+    ph7_output_consumer* pCons = &pVm->sVmConsumer;
+    sxi32 rc = SXRET_OK;
 /* Call the output consumer */
-if (pString->nByte > 0)
-{
-rc = pCons->xConsumer((const void*)pString->zString, pString->nByte, pCons->pUserData);
-if (pCons->xConsumer != VmObConsumer)
-{
+    if (pString->nByte > 0)
+    {
+        rc = pCons->xConsumer((const void*)pString->zString, pString->nByte, pCons->pUserData);
+        if (pCons->xConsumer != VmObConsumer)
+        {
 /* Increment output length */
-pVm->nOutputLen += pString->nByte;
-}
-}
-return rc;
+            pVm->nOutputLen += pString->nByte;
+        }
+    }
+    return rc;
 }
 /*
  * Format a message and invoke the installed VM output consumer
@@ -7027,29 +7015,29 @@ return rc;
  */
 PH7_PRIVATE sxi32 PH7_VmOutputConsumeAp(
     ph7_vm* pVm,         /* Target VM */
-const char* zFormat, /* Formatted message to output */
-va_list ap           /* Variable list of arguments */
+    const char* zFormat, /* Formatted message to output */
+    va_list ap           /* Variable list of arguments */
 )
 {
-ph7_output_consumer* pCons = &pVm->sVmConsumer;
-sxi32 rc = SXRET_OK;
-SyBlob sWorker;
+    ph7_output_consumer* pCons = &pVm->sVmConsumer;
+    sxi32 rc = SXRET_OK;
+    SyBlob sWorker;
 /* Format the message and call the output consumer */
-SyBlobInit(&sWorker, &pVm->sAllocator);
-SyBlobFormatAp(&sWorker, zFormat, ap);
-if (SyBlobLength(&sWorker) > 0)
-{
+    SyBlobInit(&sWorker, &pVm->sAllocator);
+    SyBlobFormatAp(&sWorker, zFormat, ap);
+    if (SyBlobLength(&sWorker) > 0)
+    {
 /* Consume the formatted message */
-rc = pCons->xConsumer(SyBlobData(&sWorker), SyBlobLength(&sWorker), pCons->pUserData);
-}
-if (pCons->xConsumer != VmObConsumer)
-{
+        rc = pCons->xConsumer(SyBlobData(&sWorker), SyBlobLength(&sWorker), pCons->pUserData);
+    }
+    if (pCons->xConsumer != VmObConsumer)
+    {
 /* Increment output length */
-pVm->nOutputLen += SyBlobLength(&sWorker);
-}
+        pVm->nOutputLen += SyBlobLength(&sWorker);
+    }
 /* Release the working buffer */
-SyBlobRelease(&sWorker);
-return rc;
+    SyBlobRelease(&sWorker);
+    return rc;
 }
 
 /*
@@ -7326,13 +7314,13 @@ static const char* VmInstrToString(sxi32 nOp)
  */
 PH7_PRIVATE sxi32 PH7_VmDump(
     ph7_vm* pVm,            /* Target VM */
-ProcConsumer xConsumer, /* Output [i.e: dump] consumer callback */
-void* pUserData         /* Last argument to xConsumer() */
+    ProcConsumer xConsumer, /* Output [i.e: dump] consumer callback */
+    void* pUserData         /* Last argument to xConsumer() */
 )
 {
-sxi32 rc;
-rc = VmByteCodeDump(pVm->pByteContainer, xConsumer, pUserData);
-return rc;
+    sxi32 rc;
+    rc = VmByteCodeDump(pVm->pByteContainer, xConsumer, pUserData);
+    return rc;
 }
 /*
  * Default constant expansion callback used by the 'const' statement if used
@@ -7586,7 +7574,7 @@ static int vm_builtin_func_exists(ph7_context* pCtx, int nArg, ph7_value** apArg
     res = 0;
     /* Perform the lookup */
     if (SyHashGet(&pVm->hFunction, (const void*)zName, (sxu32)nLen) != 0 ||
-                                                                       SyHashGet(&pVm->hHostFunction, (const void*)zName, (sxu32)nLen) != 0)
+        SyHashGet(&pVm->hHostFunction, (const void*)zName, (sxu32)nLen) != 0)
     {
         /* Function is defined */
         res = 1;
@@ -7665,7 +7653,7 @@ PH7_PRIVATE int PH7_VmIsCallable(ph7_vm* pVm, ph7_value* pValue, int CallInvoke)
         zName = ph7_value_to_string(pValue, &nLen);
         /* Perform the lookup */
         if (SyHashGet(&pVm->hFunction, (const void*)zName, (sxu32)nLen) != 0 ||
-                                                                           SyHashGet(&pVm->hHostFunction, (const void*)zName, (sxu32)nLen) != 0)
+            SyHashGet(&pVm->hHostFunction, (const void*)zName, (sxu32)nLen) != 0)
         {
             /* Function is callable */
             res = 1;
@@ -7845,16 +7833,16 @@ static int vm_builtin_register_shutdown_function(ph7_context* pCtx, int nArg, ph
  */
 PH7_PRIVATE ph7_class* PH7_VmPeekTopClass(ph7_vm* pVm)
 {
-SySet* pSet = &pVm->aSelf;
-ph7_class** apClass;
-if (SySetUsed(pSet) <= 0)
-{
+    SySet* pSet = &pVm->aSelf;
+    ph7_class** apClass;
+    if (SySetUsed(pSet) <= 0)
+    {
 /* Empty stack,return NULL */
-return 0;
-}
+        return 0;
+    }
 /* Peek the last entry */
-apClass = (ph7_class**)SySetBasePtr(pSet);
-return apClass[pSet->nUsed - 1];
+    apClass = (ph7_class**)SySetBasePtr(pSet);
+    return apClass[pSet->nUsed - 1];
 }
 
 /*
@@ -8058,7 +8046,7 @@ static int vm_builtin_property_exists(ph7_context* pCtx, int nArg, ph7_value** a
             {
                 /* Perform the lookup in the attribute and method table */
                 if (SyHashGet(&pClass->hAttr, (const void*)zName, (sxu32)nLen) != 0
-                                                                                  || SyHashGet(&pClass->hMethod, (const void*)zName, (sxu32)nLen) != 0)
+                    || SyHashGet(&pClass->hMethod, (const void*)zName, (sxu32)nLen) != 0)
                 {
                     /* property exists,flag that */
                     res = 1;
@@ -8785,67 +8773,67 @@ static int vm_builtin_is_subclass_of(ph7_context* pCtx, int nArg, ph7_value** ap
  */
 PH7_PRIVATE sxi32 PH7_VmCallClassMethod(
     ph7_vm* pVm,               /* Target VM */
-ph7_class_instance* pThis, /* Target class instance [i.e: Object in the PHP jargon]*/
-ph7_class_method* pMethod, /* Method name */
-ph7_value* pResult,        /* Store method return value here. NULL otherwise */
-int nArg,                  /* Total number of given arguments */
-ph7_value** apArg          /* Method arguments */
+    ph7_class_instance* pThis, /* Target class instance [i.e: Object in the PHP jargon]*/
+    ph7_class_method* pMethod, /* Method name */
+    ph7_value* pResult,        /* Store method return value here. NULL otherwise */
+    int nArg,                  /* Total number of given arguments */
+    ph7_value** apArg          /* Method arguments */
 )
 {
-ph7_value* aStack;
-VmInstr aInstr[2];
-int iCursor;
-int i;
+    ph7_value* aStack;
+    VmInstr aInstr[2];
+    int iCursor;
+    int i;
 /* Create a new operand stack */
-aStack = VmNewOperandStack(&(*pVm), 2/* Method name + Aux data */+ nArg);
-if (aStack == 0)
-{
-PH7_VmThrowError(&(*pVm), 0, PH7_CTX_ERR,
-"PH7 is running out of memory while invoking class method");
-return SXERR_MEM;
-}
+    aStack = VmNewOperandStack(&(*pVm), 2/* Method name + Aux data */+ nArg);
+    if (aStack == 0)
+    {
+        PH7_VmThrowError(&(*pVm), 0, PH7_CTX_ERR,
+                         "PH7 is running out of memory while invoking class method");
+        return SXERR_MEM;
+    }
 /* Fill the operand stack with the given arguments */
-for (i = 0; i < nArg; i++)
-{
-PH7_MemObjLoad(apArg[i], &aStack[i]);
+    for (i = 0; i < nArg; i++)
+    {
+        PH7_MemObjLoad(apArg[i], &aStack[i]);
 /*
  * Symisc eXtension:
  *  Parameters to [call_user_func()] can be passed by reference.
  */
-aStack[i].nIdx = apArg[i]->nIdx;
-}
-iCursor = nArg + 1;
-if (pThis)
-{
+        aStack[i].nIdx = apArg[i]->nIdx;
+    }
+    iCursor = nArg + 1;
+    if (pThis)
+    {
 /*
  * Push the class instance so that the '$this' variable will be available.
  */
-pThis->iRef++; /* Increment reference count */
-aStack[i].x.pOther = pThis;
-aStack[i].iFlags = MEMOBJ_OBJ;
-}
-aStack[i].nIdx = SXU32_HIGH; /* Mark as constant */
-i++;
+        pThis->iRef++; /* Increment reference count */
+        aStack[i].x.pOther = pThis;
+        aStack[i].iFlags = MEMOBJ_OBJ;
+    }
+    aStack[i].nIdx = SXU32_HIGH; /* Mark as constant */
+    i++;
 /* Push method name */
-SyBlobReset(&aStack[i].sBlob);
-SyBlobAppend(&aStack[i].sBlob, (const void*)SyStringData(&pMethod->sVmName), SyStringLength(&pMethod->sVmName));
-aStack[i].iFlags = MEMOBJ_STRING;
-aStack[i].nIdx = SXU32_HIGH;
+    SyBlobReset(&aStack[i].sBlob);
+    SyBlobAppend(&aStack[i].sBlob, (const void*)SyStringData(&pMethod->sVmName), SyStringLength(&pMethod->sVmName));
+    aStack[i].iFlags = MEMOBJ_STRING;
+    aStack[i].nIdx = SXU32_HIGH;
 /* Emit the CALL istruction */
-aInstr[0].iOp = PH7_OP_CALL;
-aInstr[0].iP1 = nArg; /* Total number of given arguments */
-aInstr[0].iP2 = 0;
-aInstr[0].p3 = 0;
+    aInstr[0].iOp = PH7_OP_CALL;
+    aInstr[0].iP1 = nArg; /* Total number of given arguments */
+    aInstr[0].iP2 = 0;
+    aInstr[0].p3 = 0;
 /* Emit the DONE instruction */
-aInstr[1].iOp = PH7_OP_DONE;
-aInstr[1].iP1 = 1;   /* Extract method return value */
-aInstr[1].iP2 = 0;
-aInstr[1].p3 = 0;
+    aInstr[1].iOp = PH7_OP_DONE;
+    aInstr[1].iP1 = 1;   /* Extract method return value */
+    aInstr[1].iP2 = 0;
+    aInstr[1].p3 = 0;
 /* Execute the method body (if available) */
-VmByteCodeExec(&(*pVm), aInstr, aStack, iCursor, pResult, 0, TRUE);
+    VmByteCodeExec(&(*pVm), aInstr, aStack, iCursor, pResult, 0, TRUE);
 /* Clean up the mess left behind */
-SyMemBackendFree(&pVm->sAllocator, aStack);
-return PH7_OK;
+    SyMemBackendFree(&pVm->sAllocator, aStack);
+    return PH7_OK;
 }
 /*
  * Call a user defined or foreign function where the name of the function
@@ -8856,128 +8844,128 @@ return PH7_OK;
  */
 PH7_PRIVATE sxi32 PH7_VmCallUserFunction(
     ph7_vm* pVm,       /* Target VM */
-ph7_value* pFunc,  /* Callback name */
-int nArg,          /* Total number of given arguments */
-ph7_value** apArg, /* Callback arguments */
-ph7_value* pResult /* Store callback return value here. NULL otherwise */
+    ph7_value* pFunc,  /* Callback name */
+    int nArg,          /* Total number of given arguments */
+    ph7_value** apArg, /* Callback arguments */
+    ph7_value* pResult /* Store callback return value here. NULL otherwise */
 )
 {
-ph7_value* aStack;
-VmInstr aInstr[2];
-int i;
-if ((pFunc->iFlags & (MEMOBJ_STRING | MEMOBJ_HASHMAP)) == 0)
-{
+    ph7_value* aStack;
+    VmInstr aInstr[2];
+    int i;
+    if ((pFunc->iFlags & (MEMOBJ_STRING | MEMOBJ_HASHMAP)) == 0)
+    {
 /* Don't bother processing,it's invalid anyway */
-if (pResult != NULL)
-{
+        if (pResult != NULL)
+        {
 /* Assume a null return value */
-PH7_MemObjRelease(pResult);
-}
-return SXERR_INVALID;
-}
-if (pFunc->iFlags & MEMOBJ_HASHMAP)
-{
+            PH7_MemObjRelease(pResult);
+        }
+        return SXERR_INVALID;
+    }
+    if (pFunc->iFlags & MEMOBJ_HASHMAP)
+    {
 /* Class method */
-ph7_hashmap* pMap = (ph7_hashmap*)pFunc->x.pOther;
-ph7_class_method* pMethod = 0;
-ph7_class_instance* pThis = 0;
-ph7_class* pClass = 0;
-ph7_value* pValue;
-sxi32 rc;
-if (pMap->nEntry < 2 /* Class name/instance + method name */)
-{
+        ph7_hashmap* pMap = (ph7_hashmap*)pFunc->x.pOther;
+        ph7_class_method* pMethod = 0;
+        ph7_class_instance* pThis = 0;
+        ph7_class* pClass = 0;
+        ph7_value* pValue;
+        sxi32 rc;
+        if (pMap->nEntry < 2 /* Class name/instance + method name */)
+        {
 /* Empty hashmap,nothing to call */
-if (pResult != NULL)
-{
+            if (pResult != NULL)
+            {
 /* Assume a null return value */
-PH7_MemObjRelease(pResult);
-}
-return SXRET_OK;
-}
+                PH7_MemObjRelease(pResult);
+            }
+            return SXRET_OK;
+        }
 /* Extract the class name or an instance of it */
-pValue = (ph7_value*)SySetAt(&pVm->aMemObj, pMap->pFirst->nValIdx);
-if (pValue)
-{
-pClass = VmExtractClassFromValue(&(*pVm), pValue);
-}
-if (pClass == 0)
-{
+        pValue = (ph7_value*)SySetAt(&pVm->aMemObj, pMap->pFirst->nValIdx);
+        if (pValue)
+        {
+            pClass = VmExtractClassFromValue(&(*pVm), pValue);
+        }
+        if (pClass == 0)
+        {
 /* No such class,return NULL */
-if (pResult != NULL)
-{
-PH7_MemObjRelease(pResult);
-}
-return SXRET_OK;
-}
-if (pValue->iFlags & MEMOBJ_OBJ)
-{
+            if (pResult != NULL)
+            {
+                PH7_MemObjRelease(pResult);
+            }
+            return SXRET_OK;
+        }
+        if (pValue->iFlags & MEMOBJ_OBJ)
+        {
 /* Point to the class instance */
-pThis = (ph7_class_instance*)pValue->x.pOther;
-}
+            pThis = (ph7_class_instance*)pValue->x.pOther;
+        }
 /* Try to extract the method */
-pValue = (ph7_value*)SySetAt(&pVm->aMemObj, pMap->pFirst->pPrev->nValIdx);
-if (pValue)
-{
-if ((pValue->iFlags & MEMOBJ_STRING) && SyBlobLength(&pValue->sBlob) > 0)
-{
-pMethod = PH7_ClassExtractMethod(pClass, (const char*)SyBlobData(&pValue->sBlob),
-                                 SyBlobLength(&pValue->sBlob));
-}
-}
-if (pMethod == 0)
-{
+        pValue = (ph7_value*)SySetAt(&pVm->aMemObj, pMap->pFirst->pPrev->nValIdx);
+        if (pValue)
+        {
+            if ((pValue->iFlags & MEMOBJ_STRING) && SyBlobLength(&pValue->sBlob) > 0)
+            {
+                pMethod = PH7_ClassExtractMethod(pClass, (const char*)SyBlobData(&pValue->sBlob),
+                                                 SyBlobLength(&pValue->sBlob));
+            }
+        }
+        if (pMethod == 0)
+        {
 /* No such method,return NULL */
-if (pResult != NULL)
-{
-PH7_MemObjRelease(pResult);
-}
-return SXRET_OK;
-}
+            if (pResult != NULL)
+            {
+                PH7_MemObjRelease(pResult);
+            }
+            return SXRET_OK;
+        }
 /* Call the class method */
-rc = PH7_VmCallClassMethod(&(*pVm), pThis, pMethod, pResult, nArg, apArg);
-return rc;
-}
+        rc = PH7_VmCallClassMethod(&(*pVm), pThis, pMethod, pResult, nArg, apArg);
+        return rc;
+    }
 /* Create a new operand stack */
-aStack = VmNewOperandStack(&(*pVm), 1 + nArg);
-if (aStack == 0)
-{
-PH7_VmThrowError(&(*pVm), 0, PH7_CTX_ERR,
-"PH7 is running out of memory while invoking user callback");
-if (pResult != NULL)
-{
+    aStack = VmNewOperandStack(&(*pVm), 1 + nArg);
+    if (aStack == 0)
+    {
+        PH7_VmThrowError(&(*pVm), 0, PH7_CTX_ERR,
+                         "PH7 is running out of memory while invoking user callback");
+        if (pResult != NULL)
+        {
 /* Assume a null return value */
-PH7_MemObjRelease(pResult);
-}
-return SXERR_MEM;
-}
+            PH7_MemObjRelease(pResult);
+        }
+        return SXERR_MEM;
+    }
 /* Fill the operand stack with the given arguments */
-for (i = 0; i < nArg; i++)
-{
-PH7_MemObjLoad(apArg[i], &aStack[i]);
+    for (i = 0; i < nArg; i++)
+    {
+        PH7_MemObjLoad(apArg[i], &aStack[i]);
 /*
  * Symisc eXtension:
  *  Parameters to [call_user_func()] can be passed by reference.
  */
-aStack[i].nIdx = apArg[i]->nIdx;
-}
+        aStack[i].nIdx = apArg[i]->nIdx;
+    }
 /* Push the function name */
-PH7_MemObjLoad(pFunc, &aStack[i]);
-aStack[i].nIdx = SXU32_HIGH; /* Mark as constant */
+    PH7_MemObjLoad(pFunc, &aStack[i]);
+    aStack[i].nIdx = SXU32_HIGH; /* Mark as constant */
 /* Emit the CALL istruction */
-aInstr[0].iOp = PH7_OP_CALL;
-aInstr[0].iP1 = nArg; /* Total number of given arguments */
-aInstr[0].iP2 = 0;
-aInstr[0].p3 = 0;
+    aInstr[0].iOp = PH7_OP_CALL;
+    aInstr[0].iP1 = nArg; /* Total number of given arguments */
+    aInstr[0].iP2 = 0;
+    aInstr[0].p3 = 0;
 /* Emit the DONE instruction */
-aInstr[1].iOp = PH7_OP_DONE;
-aInstr[1].iP1 = 1;   /* Extract function return value if available */
-aInstr[1].iP2 = 0;
-aInstr[1].p3 = 0;
+    aInstr[1].iOp = PH7_OP_DONE;
+    aInstr[1].iP1 = 1;   /* Extract function return value if available */
+    aInstr[1].iP2 = 0;
+    aInstr[1].p3 = 0;
 /* Execute the function body (if available) */
-VmByteCodeExec(&(*pVm), aInstr, aStack, nArg, pResult, 0, TRUE);
+    VmByteCodeExec(&(*pVm), aInstr, aStack, nArg, pResult, 0, TRUE);
 /* Clean up the mess left behind */
-SyMemBackendFree(&pVm->sAllocator, aStack);
-return PH7_OK;
+    SyMemBackendFree(&pVm->sAllocator, aStack);
+    return PH7_OK;
 }
 /*
  * Call a user defined or foreign function whith a varibale number
@@ -8988,32 +8976,32 @@ return PH7_OK;
  */
 PH7_PRIVATE sxi32 PH7_VmCallUserFunctionAp(
     ph7_vm* pVm,       /* Target VM */
-ph7_value* pFunc,  /* Callback name */
-ph7_value* pResult,/* Store callback return value here. NULL otherwise */
-...                /* 0 (Zero) or more Callback arguments */
+    ph7_value* pFunc,  /* Callback name */
+    ph7_value* pResult,/* Store callback return value here. NULL otherwise */
+    ...                /* 0 (Zero) or more Callback arguments */
 )
 {
-ph7_value* pArg;
-SySet aArg;
-va_list ap;
-sxi32 rc;
-SySetInit(&aArg, &pVm->sAllocator, sizeof(ph7_value*));
+    ph7_value* pArg;
+    SySet aArg;
+    va_list ap;
+    sxi32 rc;
+    SySetInit(&aArg, &pVm->sAllocator, sizeof(ph7_value*));
 /* Copy arguments one after one */
-va_start(ap, pResult);
-for (;;)
-{
-pArg = va_arg(ap, ph7_value *);
-if (pArg == 0)
-{
-break;
-}
-SySetPut(&aArg, (const void*)&pArg);
-}
+    va_start(ap, pResult);
+    for (;;)
+    {
+        pArg = va_arg(ap, ph7_value *);
+        if (pArg == 0)
+        {
+            break;
+        }
+        SySetPut(&aArg, (const void*)&pArg);
+    }
 /* Call the core routine */
-rc = PH7_VmCallUserFunction(&(*pVm), pFunc, (int)SySetUsed(&aArg), (ph7_value**)SySetBasePtr(&aArg), pResult);
+    rc = PH7_VmCallUserFunction(&(*pVm), pFunc, (int)SySetUsed(&aArg), (ph7_value**)SySetBasePtr(&aArg), pResult);
 /* Cleanup */
-SySetRelease(&aArg);
-return rc;
+    SySetRelease(&aArg);
+    return rc;
 }
 
 /*
@@ -9099,7 +9087,7 @@ static int vm_builtin_call_user_func_array(ph7_context* pCtx, int nArg, ph7_valu
     }
     /* Try to invoke the callback */
     rc = PH7_VmCallUserFunction(pCtx->pVm, apArg[0], (int)SySetUsed(&aArg), (ph7_value**)SySetBasePtr(&aArg),
-        &sResult);
+                                &sResult);
     if (rc != SXRET_OK)
     {
         /* An error occured while invoking the given callback [i.e: not defined] */
@@ -9844,9 +9832,9 @@ static int vm_builtin_ob_list_handlers(ph7_context* pCtx, int nArg, ph7_value** 
  */
 PH7_PRIVATE sxu32 PH7_VmRandomNum(ph7_vm* pVm)
 {
-sxu32 iNum;
-SyRandomness(&pVm->sPrng, (void*)&iNum, sizeof(sxu32));
-return iNum;
+    sxu32 iNum;
+    SyRandomness(&pVm->sPrng, (void*)&iNum, sizeof(sxu32));
+    return iNum;
 }
 /*
  * Generate a random string (English Alphabet) of length nLen.
@@ -10242,31 +10230,31 @@ static int vm_builtin_isset(ph7_context* pCtx, int nArg, ph7_value** apArg)
  */
 PH7_PRIVATE sxi32 PH7_VmUnsetMemObj(ph7_vm* pVm, sxu32 nObjIdx, int bForce)
 {
-ph7_value* pObj;
-VmRefObj* pRef;
-pObj = (ph7_value*)SySetAt(&pVm->aMemObj, nObjIdx);
-if (pObj)
-{
+    ph7_value* pObj;
+    VmRefObj* pRef;
+    pObj = (ph7_value*)SySetAt(&pVm->aMemObj, nObjIdx);
+    if (pObj)
+    {
 /* Release the object */
-PH7_MemObjRelease(pObj);
-}
+        PH7_MemObjRelease(pObj);
+    }
 /* Remove old reference links */
-pRef = VmRefObjExtract(&(*pVm), nObjIdx);
-if (pRef)
-{
-sxi32 iFlags = pRef->iFlags;
+    pRef = VmRefObjExtract(&(*pVm), nObjIdx);
+    if (pRef)
+    {
+        sxi32 iFlags = pRef->iFlags;
 /* Unlink from the reference table */
-VmRefObjUnlink(&(*pVm), pRef);
-if ((bForce == TRUE) || (iFlags & VM_REF_IDX_KEEP) == 0)
-{
-VmSlot sFree;
+        VmRefObjUnlink(&(*pVm), pRef);
+        if ((bForce == TRUE) || (iFlags & VM_REF_IDX_KEEP) == 0)
+        {
+            VmSlot sFree;
 /* Restore to the free list */
-sFree.nIdx = nObjIdx;
-sFree.pUserData = 0;
-SySetPut(&pVm->aFreeObj, (const void*)&sFree);
-}
-}
-return SXRET_OK;
+            sFree.nIdx = nObjIdx;
+            sFree.pUserData = 0;
+            SySetPut(&pVm->aFreeObj, (const void*)&sFree);
+        }
+    }
+    return SXRET_OK;
 }
 
 /*
@@ -12470,22 +12458,22 @@ static int VmIsIncludedFile(ph7_vm* pVm, SyString* pFile)
  */
 PH7_PRIVATE sxi32 PH7_VmPushFilePath(ph7_vm* pVm, const char* zPath, int nLen, sxu8 bMain, sxi32* pNew)
 {
-SyString sPath;
-char* zDup;
+    SyString sPath;
+    char* zDup;
 #ifdef __WINNT__
-char* zCur;
+    char* zCur;
 #endif
-sxi32 rc;
-if (nLen < 0)
-{
-nLen = SyStrlen(zPath);
-}
+    sxi32 rc;
+    if (nLen < 0)
+    {
+        nLen = SyStrlen(zPath);
+    }
 /* Duplicate the file path first */
-zDup = SyMemBackendStrDup(&pVm->sAllocator, zPath, nLen);
-if (zDup == 0)
-{
-return SXERR_MEM;
-}
+    zDup = SyMemBackendStrDup(&pVm->sAllocator, zPath, nLen);
+    if (zDup == 0)
+    {
+        return SXERR_MEM;
+    }
 #ifdef __WINNT__
 /* Normalize path on windows
  * Example:
@@ -12493,44 +12481,44 @@ return SXERR_MEM;
  * becomes
  *   path\to\file.php
  */
-zCur = zDup;
-while (zCur[0] != 0)
-{
-if (zCur[0] == '/')
-{
-zCur[0] = '\\';
-}
-else if ((unsigned char)zCur[0] < 0xc0 && SyisUpper(zCur[0]))
-{
-int c = SyToLower(zCur[0]);
-zCur[0] = (char)c; /* MSVC stupidity */
-}
-zCur++;
-}
+    zCur = zDup;
+    while (zCur[0] != 0)
+    {
+        if (zCur[0] == '/')
+        {
+            zCur[0] = '\\';
+        }
+        else if ((unsigned char)zCur[0] < 0xc0 && SyisUpper(zCur[0]))
+        {
+            int c = SyToLower(zCur[0]);
+            zCur[0] = (char)c; /* MSVC stupidity */
+        }
+        zCur++;
+    }
 #endif
 /* Install the file path */
-SyStringInitFromBuf(&sPath, zDup, nLen);
-if (!bMain)
-{
-if (VmIsIncludedFile(&(*pVm), &sPath))
-{
+    SyStringInitFromBuf(&sPath, zDup, nLen);
+    if (!bMain)
+    {
+        if (VmIsIncludedFile(&(*pVm), &sPath))
+        {
 /* Already included */
-*pNew = 0;
-}
-else
-{
+            *pNew = 0;
+        }
+        else
+        {
 /* Insert in the corresponding container */
-rc = SySetPut(&pVm->aIncluded, (const void*)&sPath);
-if (rc != SXRET_OK)
-{
-SyMemBackendFree(&pVm->sAllocator, zDup);
-return rc;
-}
-*pNew = 1;
-}
-}
-SySetPut(&pVm->aFiles, (const void*)&sPath);
-return SXRET_OK;
+            rc = SySetPut(&pVm->aIncluded, (const void*)&sPath);
+            if (rc != SXRET_OK)
+            {
+                SyMemBackendFree(&pVm->sAllocator, zDup);
+                return rc;
+            }
+            *pNew = 1;
+        }
+    }
+    SySetPut(&pVm->aFiles, (const void*)&sPath);
+    return SXRET_OK;
 }
 
 /*
@@ -16044,47 +16032,47 @@ static sxi32 VmRegisterSpecialFunction(ph7_vm* pVm)
  */
 PH7_PRIVATE ph7_class* PH7_VmExtractClass(
     ph7_vm* pVm,        /* Target VM */
-const char* zName,  /* Name of the target class */
-sxu32 nByte,        /* zName length */
-sxi32 iLoadable,    /* TRUE to return only loadable class
+    const char* zName,  /* Name of the target class */
+    sxu32 nByte,        /* zName length */
+    sxi32 iLoadable,    /* TRUE to return only loadable class
                          * [i.e: no abstract classes or interfaces]
                          */
-sxi32 iNest         /* Nesting level (Not used) */
+    sxi32 iNest         /* Nesting level (Not used) */
 )
 {
-SyHashEntry* pEntry;
-ph7_class* pClass;
+    SyHashEntry* pEntry;
+    ph7_class* pClass;
 /* Perform a hash lookup */
-pEntry = SyHashGet(&pVm->hClass, (const void*)zName, nByte);
+    pEntry = SyHashGet(&pVm->hClass, (const void*)zName, nByte);
 
-if (pEntry == 0)
-{
+    if (pEntry == 0)
+    {
 /* No such entry,return NULL */
-iNest = 0; /* cc warning */
-return 0;
-}
-pClass = (ph7_class*)pEntry->pUserData;
-if (!iLoadable)
-{
+        iNest = 0; /* cc warning */
+        return 0;
+    }
+    pClass = (ph7_class*)pEntry->pUserData;
+    if (!iLoadable)
+    {
 /* Return the first class seen */
-return pClass;
-}
-else
-{
+        return pClass;
+    }
+    else
+    {
 /* Check the collision list */
-while (pClass)
-{
-if ((pClass->iFlags & (PH7_CLASS_INTERFACE | PH7_CLASS_ABSTRACT)) == 0)
-{
+        while (pClass)
+        {
+            if ((pClass->iFlags & (PH7_CLASS_INTERFACE | PH7_CLASS_ABSTRACT)) == 0)
+            {
 /* Class is loadable */
-return pClass;
-}
+                return pClass;
+            }
 /* Point to the next entry */
-pClass = pClass->pNextName;
-}
-}
+            pClass = pClass->pNextName;
+        }
+    }
 /* No such loadable class */
-return 0;
+    return 0;
 }
 /*
  * Reference Table Implementation
@@ -16296,57 +16284,57 @@ static sxi32 VmRefObjUnlink(ph7_vm* pVm, VmRefObj* pRef)
  */
 PH7_PRIVATE sxi32 PH7_VmRefObjInstall(
     ph7_vm* pVm,                 /* Target VM */
-sxu32 nIdx,                  /* Memory object index in the global object pool */
-SyHashEntry* pEntry,         /* Hash entry of this object */
-ph7_hashmap_node* pMapEntry, /* != NULL if the memory object is an array entry */
-sxi32 iFlags                 /* Control flags */
+    sxu32 nIdx,                  /* Memory object index in the global object pool */
+    SyHashEntry* pEntry,         /* Hash entry of this object */
+    ph7_hashmap_node* pMapEntry, /* != NULL if the memory object is an array entry */
+    sxi32 iFlags                 /* Control flags */
 )
 {
-VmFrame* pFrame = pVm->pFrame;
-VmRefObj* pRef;
+    VmFrame* pFrame = pVm->pFrame;
+    VmRefObj* pRef;
 /* Check if the referenced object already exists */
-pRef = VmRefObjExtract(&(*pVm), nIdx);
-if (pRef == 0)
-{
+    pRef = VmRefObjExtract(&(*pVm), nIdx);
+    if (pRef == 0)
+    {
 /* Create a new entry */
-pRef = VmNewRefObj(&(*pVm), nIdx);
-if (pRef == 0)
-{
-return SXERR_MEM;
-}
-pRef->iFlags = iFlags;
+        pRef = VmNewRefObj(&(*pVm), nIdx);
+        if (pRef == 0)
+        {
+            return SXERR_MEM;
+        }
+        pRef->iFlags = iFlags;
 /* Install the entry */
-VmRefObjInsert(&(*pVm), pRef);
-}
-while (pFrame->pParent && (pFrame->iFlags & VM_FRAME_EXCEPTION))
-{
+        VmRefObjInsert(&(*pVm), pRef);
+    }
+    while (pFrame->pParent && (pFrame->iFlags & VM_FRAME_EXCEPTION))
+    {
 /* Safely ignore the exception frame */
-pFrame = pFrame->pParent;
-}
-if (pFrame->pParent != 0 && pEntry)
-{
-VmSlot sRef;
+        pFrame = pFrame->pParent;
+    }
+    if (pFrame->pParent != 0 && pEntry)
+    {
+        VmSlot sRef;
 /* Local frame,record referenced entry so that it can
  * be deleted when we leave this frame.
  */
-sRef.nIdx = nIdx;
-sRef.pUserData = pEntry;
-if (SXRET_OK != SySetPut(&pFrame->sRef, (const void*)&sRef))
-{
-pEntry = 0; /* Do not record this entry */
-}
-}
-if (pEntry != NULL)
-{
+        sRef.nIdx = nIdx;
+        sRef.pUserData = pEntry;
+        if (SXRET_OK != SySetPut(&pFrame->sRef, (const void*)&sRef))
+        {
+            pEntry = 0; /* Do not record this entry */
+        }
+    }
+    if (pEntry != NULL)
+    {
 /* Address of the hash-entry */
-SySetPut(&pRef->aReference, (const void*)&pEntry);
-}
-if (pMapEntry)
-{
+        SySetPut(&pRef->aReference, (const void*)&pEntry);
+    }
+    if (pMapEntry)
+    {
 /* Address of the hashmap node [i.e: Array entry] */
-SySetPut(&pRef->aArrEntries, (const void*)&pMapEntry);
-}
-return SXRET_OK;
+        SySetPut(&pRef->aArrEntries, (const void*)&pMapEntry);
+    }
+    return SXRET_OK;
 }
 /*
  * Remove a memory object [i.e: a variable] from the reference table.
@@ -16359,53 +16347,53 @@ return SXRET_OK;
  */
 PH7_PRIVATE sxi32 PH7_VmRefObjRemove(
     ph7_vm* pVm,                 /* Target VM */
-sxu32 nIdx,                  /* Memory object index in the global object pool */
-SyHashEntry* pEntry,         /* Hash entry of this object */
-ph7_hashmap_node* pMapEntry  /* != NULL if the memory object is an array entry */
+    sxu32 nIdx,                  /* Memory object index in the global object pool */
+    SyHashEntry* pEntry,         /* Hash entry of this object */
+    ph7_hashmap_node* pMapEntry  /* != NULL if the memory object is an array entry */
 )
 {
-VmRefObj* pRef;
-sxu32 n;
+    VmRefObj* pRef;
+    sxu32 n;
 /* Check if the referenced object already exists */
-pRef = VmRefObjExtract(&(*pVm), nIdx);
-if (pRef == 0)
-{
+    pRef = VmRefObjExtract(&(*pVm), nIdx);
+    if (pRef == 0)
+    {
 /* Not such entry */
-return SXERR_NOTFOUND;
-}
+        return SXERR_NOTFOUND;
+    }
 /* Remove the desired entry */
-if (pEntry != NULL)
-{
-SyHashEntry** apEntry;
-apEntry = (SyHashEntry**)SySetBasePtr(&pRef->aReference);
-for (n = 0; n < SySetUsed(&pRef->aReference); n++)
-{
-if (apEntry[n] == pEntry)
-{
+    if (pEntry != NULL)
+    {
+        SyHashEntry** apEntry;
+        apEntry = (SyHashEntry**)SySetBasePtr(&pRef->aReference);
+        for (n = 0; n < SySetUsed(&pRef->aReference); n++)
+        {
+            if (apEntry[n] == pEntry)
+            {
 /* Nullify the entry */
-apEntry[n] = 0;
+                apEntry[n] = 0;
 /*
  * NOTE:
  * In future releases,think to add a free pool of entries,so that
  * we avoid wasting spaces.
  */
-}
-}
-}
-if (pMapEntry)
-{
-ph7_hashmap_node** apNode;
-apNode = (ph7_hashmap_node**)SySetBasePtr(&pRef->aArrEntries);
-for (n = 0; n < SySetUsed(&pRef->aArrEntries); n++)
-{
-if (apNode[n] == pMapEntry)
-{
+            }
+        }
+    }
+    if (pMapEntry)
+    {
+        ph7_hashmap_node** apNode;
+        apNode = (ph7_hashmap_node**)SySetBasePtr(&pRef->aArrEntries);
+        for (n = 0; n < SySetUsed(&pRef->aArrEntries); n++)
+        {
+            if (apNode[n] == pMapEntry)
+            {
 /* nullify the entry */
-apNode[n] = 0;
-}
-}
-}
-return SXRET_OK;
+                apNode[n] = 0;
+            }
+        }
+    }
+    return SXRET_OK;
 }
 
 #ifndef PH7_DISABLE_BUILTIN_FUNC
@@ -16419,55 +16407,55 @@ return SXRET_OK;
  */
 PH7_PRIVATE const ph7_io_stream* PH7_VmGetStreamDevice(
     ph7_vm* pVm,           /* Target VM */
-const char** pzDevice, /* Full path,URI,... */
-int nByte              /* *pzDevice length*/
+    const char** pzDevice, /* Full path,URI,... */
+    int nByte              /* *pzDevice length*/
 )
 {
-const char* zIn, * zEnd, * zCur, * zNext;
-ph7_io_stream** apStream, * pStream;
-SyString sDev, sCur;
-sxu32 n, nEntry;
-int rc;
+    const char* zIn, * zEnd, * zCur, * zNext;
+    ph7_io_stream** apStream, * pStream;
+    SyString sDev, sCur;
+    sxu32 n, nEntry;
+    int rc;
 /* Check if a scheme [i.e: file://,http://,zip://...] is available */
-zNext = zCur = zIn = *pzDevice;
-zEnd = &zIn[nByte];
-while (zIn < zEnd)
-{
-if (zIn < &zEnd[-3]/*://*/ && zIn[0] == ':' && zIn[1] == '/' && zIn[2] == '/')
-{
+    zNext = zCur = zIn = *pzDevice;
+    zEnd = &zIn[nByte];
+    while (zIn < zEnd)
+    {
+        if (zIn < &zEnd[-3]/*://*/ && zIn[0] == ':' && zIn[1] == '/' && zIn[2] == '/')
+        {
 /* Got one */
-zNext = &zIn[sizeof("://") - 1];
-break;
-}
+            zNext = &zIn[sizeof("://") - 1];
+            break;
+        }
 /* Advance the cursor */
-zIn++;
-}
-if (zIn >= zEnd)
-{
+        zIn++;
+    }
+    if (zIn >= zEnd)
+    {
 /* No such scheme,return the default stream */
-return pVm->pDefStream;
-}
-SyStringInitFromBuf(&sDev, zCur, zIn - zCur);
+        return pVm->pDefStream;
+    }
+    SyStringInitFromBuf(&sDev, zCur, zIn - zCur);
 /* Remove leading and trailing white spaces */
-SyStringFullTrim(&sDev);
+    SyStringFullTrim(&sDev);
 /* Perform a linear lookup on the installed stream devices */
-apStream = (ph7_io_stream**)SySetBasePtr(&pVm->aIOstream);
-nEntry = SySetUsed(&pVm->aIOstream);
-for (n = 0; n < nEntry; n++)
-{
-pStream = apStream[n];
-SyStringInitFromBuf(&sCur, pStream->zName, SyStrlen(pStream->zName));
+    apStream = (ph7_io_stream**)SySetBasePtr(&pVm->aIOstream);
+    nEntry = SySetUsed(&pVm->aIOstream);
+    for (n = 0; n < nEntry; n++)
+    {
+        pStream = apStream[n];
+        SyStringInitFromBuf(&sCur, pStream->zName, SyStrlen(pStream->zName));
 /* Perfrom a case-insensitive comparison */
-rc = SyStringCmp(&sDev, &sCur, SyStrnicmp);
-if (rc == 0)
-{
+        rc = SyStringCmp(&sDev, &sCur, SyStrnicmp);
+        if (rc == 0)
+        {
 /* Stream device found */
-*pzDevice = zNext;
-return pStream;
-}
-}
+            *pzDevice = zNext;
+            return pStream;
+        }
+    }
 /* No such stream,return NULL */
-return 0;
+    return 0;
 }
 
 #endif /* PH7_DISABLE_BUILTIN_FUNC */

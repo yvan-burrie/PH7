@@ -8974,142 +8974,142 @@ PH7_PRIVATE sxi32 PH7_RegisterIORoutine(ph7_vm* pVm)
 {
 #ifndef PH7_DISABLE_BUILTIN_FUNC
 /* VFS functions */
-static const ph7_builtin_func aVfsFunc[] = {
-    {"chdir",                       PH7_vfs_chdir},
-    {"chroot",                      PH7_vfs_chroot},
-    {"getcwd",                      PH7_vfs_getcwd},
-    {"rmdir",                       PH7_vfs_rmdir},
-    {"is_dir",                      PH7_vfs_is_dir},
-    {"mkdir",                       PH7_vfs_mkdir},
-    {"rename",                      PH7_vfs_rename},
-    {"realpath",                    PH7_vfs_realpath},
-    {"sleep",                       PH7_vfs_sleep},
-    {"usleep",                      PH7_vfs_usleep},
-    {"unlink",                      PH7_vfs_unlink},
-    {"delete",                      PH7_vfs_unlink},
-    {"chmod",                       PH7_vfs_chmod},
-    {"chown",                       PH7_vfs_chown},
-    {"chgrp",                       PH7_vfs_chgrp},
-    {"disk_free_space",             PH7_vfs_disk_free_space},
-    {"diskfreespace",               PH7_vfs_disk_free_space},
-    {"disk_total_space",            PH7_vfs_disk_total_space},
-    {"file_exists",                 PH7_vfs_file_exists},
-    {"filesize",                    PH7_vfs_file_size},
-    {"fileatime",                   PH7_vfs_file_atime},
-    {"filemtime",                   PH7_vfs_file_mtime},
-    {"filectime",                   PH7_vfs_file_ctime},
-    {"is_file",                     PH7_vfs_is_file},
-    {"is_link",                     PH7_vfs_is_link},
-    {"is_readable",                 PH7_vfs_is_readable},
-    {"is_writable",                 PH7_vfs_is_writable},
-    {"is_executable",               PH7_vfs_is_executable},
-    {"filetype",                    PH7_vfs_filetype},
-    {"stat",                        PH7_vfs_stat},
-    {"lstat",                       PH7_vfs_lstat},
-    {"getenv",                      PH7_vfs_getenv},
-    {"setenv",                      PH7_vfs_putenv},
-    {"putenv",                      PH7_vfs_putenv},
-    {"touch",                       PH7_vfs_touch},
-    {"link",                        PH7_vfs_link},
-    {"symlink",                     PH7_vfs_symlink},
-    {"umask",                       PH7_vfs_umask},
-    {"sys_get_temp_dir",            PH7_vfs_sys_get_temp_dir},
-    {"get_current_user",            PH7_vfs_get_current_user},
-    {"getmypid",                    PH7_vfs_getmypid},
-    {"getpid",                      PH7_vfs_getmypid},
-    {"getmyuid",                    PH7_vfs_getmyuid},
-    {"getuid",                      PH7_vfs_getmyuid},
-    {"getmygid",                    PH7_vfs_getmygid},
-    {"getgid",                      PH7_vfs_getmygid},
-    {"ph7_uname",                   PH7_vfs_ph7_uname},
-    {"php_uname",                   PH7_vfs_ph7_uname},
-    /* Path processing */
-    {"dirname",                     PH7_builtin_dirname},
-    {"basename",                    PH7_builtin_basename},
-    {"pathinfo",                    PH7_builtin_pathinfo},
-    {"strglob",                     PH7_builtin_strglob},
-    {"fnmatch",                     PH7_builtin_fnmatch},
-    /* ZIP processing */
-    {"zip_open",                    PH7_builtin_zip_open},
-    {"zip_close",                   PH7_builtin_zip_close},
-    {"zip_read",                    PH7_builtin_zip_read},
-    {"zip_entry_open",              PH7_builtin_zip_entry_open},
-    {"zip_entry_close",             PH7_builtin_zip_entry_close},
-    {"zip_entry_name",              PH7_builtin_zip_entry_name},
-    {"zip_entry_filesize",          PH7_builtin_zip_entry_filesize},
-    {"zip_entry_compressedsize",    PH7_builtin_zip_entry_compressedsize},
-    {"zip_entry_read",              PH7_builtin_zip_entry_read},
-    {"zip_entry_reset_read_cursor", PH7_builtin_zip_entry_reset_read_cursor},
-    {"zip_entry_compressionmethod", PH7_builtin_zip_entry_compressionmethod}
-};
+    static const ph7_builtin_func aVfsFunc[] = {
+        {"chdir",                       PH7_vfs_chdir},
+        {"chroot",                      PH7_vfs_chroot},
+        {"getcwd",                      PH7_vfs_getcwd},
+        {"rmdir",                       PH7_vfs_rmdir},
+        {"is_dir",                      PH7_vfs_is_dir},
+        {"mkdir",                       PH7_vfs_mkdir},
+        {"rename",                      PH7_vfs_rename},
+        {"realpath",                    PH7_vfs_realpath},
+        {"sleep",                       PH7_vfs_sleep},
+        {"usleep",                      PH7_vfs_usleep},
+        {"unlink",                      PH7_vfs_unlink},
+        {"delete",                      PH7_vfs_unlink},
+        {"chmod",                       PH7_vfs_chmod},
+        {"chown",                       PH7_vfs_chown},
+        {"chgrp",                       PH7_vfs_chgrp},
+        {"disk_free_space",             PH7_vfs_disk_free_space},
+        {"diskfreespace",               PH7_vfs_disk_free_space},
+        {"disk_total_space",            PH7_vfs_disk_total_space},
+        {"file_exists",                 PH7_vfs_file_exists},
+        {"filesize",                    PH7_vfs_file_size},
+        {"fileatime",                   PH7_vfs_file_atime},
+        {"filemtime",                   PH7_vfs_file_mtime},
+        {"filectime",                   PH7_vfs_file_ctime},
+        {"is_file",                     PH7_vfs_is_file},
+        {"is_link",                     PH7_vfs_is_link},
+        {"is_readable",                 PH7_vfs_is_readable},
+        {"is_writable",                 PH7_vfs_is_writable},
+        {"is_executable",               PH7_vfs_is_executable},
+        {"filetype",                    PH7_vfs_filetype},
+        {"stat",                        PH7_vfs_stat},
+        {"lstat",                       PH7_vfs_lstat},
+        {"getenv",                      PH7_vfs_getenv},
+        {"setenv",                      PH7_vfs_putenv},
+        {"putenv",                      PH7_vfs_putenv},
+        {"touch",                       PH7_vfs_touch},
+        {"link",                        PH7_vfs_link},
+        {"symlink",                     PH7_vfs_symlink},
+        {"umask",                       PH7_vfs_umask},
+        {"sys_get_temp_dir",            PH7_vfs_sys_get_temp_dir},
+        {"get_current_user",            PH7_vfs_get_current_user},
+        {"getmypid",                    PH7_vfs_getmypid},
+        {"getpid",                      PH7_vfs_getmypid},
+        {"getmyuid",                    PH7_vfs_getmyuid},
+        {"getuid",                      PH7_vfs_getmyuid},
+        {"getmygid",                    PH7_vfs_getmygid},
+        {"getgid",                      PH7_vfs_getmygid},
+        {"ph7_uname",                   PH7_vfs_ph7_uname},
+        {"php_uname",                   PH7_vfs_ph7_uname},
+        /* Path processing */
+        {"dirname",                     PH7_builtin_dirname},
+        {"basename",                    PH7_builtin_basename},
+        {"pathinfo",                    PH7_builtin_pathinfo},
+        {"strglob",                     PH7_builtin_strglob},
+        {"fnmatch",                     PH7_builtin_fnmatch},
+        /* ZIP processing */
+        {"zip_open",                    PH7_builtin_zip_open},
+        {"zip_close",                   PH7_builtin_zip_close},
+        {"zip_read",                    PH7_builtin_zip_read},
+        {"zip_entry_open",              PH7_builtin_zip_entry_open},
+        {"zip_entry_close",             PH7_builtin_zip_entry_close},
+        {"zip_entry_name",              PH7_builtin_zip_entry_name},
+        {"zip_entry_filesize",          PH7_builtin_zip_entry_filesize},
+        {"zip_entry_compressedsize",    PH7_builtin_zip_entry_compressedsize},
+        {"zip_entry_read",              PH7_builtin_zip_entry_read},
+        {"zip_entry_reset_read_cursor", PH7_builtin_zip_entry_reset_read_cursor},
+        {"zip_entry_compressionmethod", PH7_builtin_zip_entry_compressionmethod}
+    };
 /* IO stream functions */
-static const ph7_builtin_func aIOFunc[] = {
-    {"ftruncate", PH7_builtin_ftruncate},
-    {"fseek", PH7_builtin_fseek},
-    {"ftell", PH7_builtin_ftell},
-    {"rewind", PH7_builtin_rewind},
-    {"fflush", PH7_builtin_fflush},
-    {"feof", PH7_builtin_feof},
-    {"fgetc", PH7_builtin_fgetc},
-    {"fgets", PH7_builtin_fgets},
-    {"fread", PH7_builtin_fread},
-    {"fgetcsv", PH7_builtin_fgetcsv},
-    {"fgetss", PH7_builtin_fgetss},
-    {"readdir", PH7_builtin_readdir},
-    {"rewinddir", PH7_builtin_rewinddir},
-    {"closedir", PH7_builtin_closedir},
-    {"opendir", PH7_builtin_opendir},
-    {"readfile", PH7_builtin_readfile},
-    {"file_get_contents", PH7_builtin_file_get_contents},
-    {"file_put_contents", PH7_builtin_file_put_contents},
-    {"file", PH7_builtin_file},
-    {"copy", PH7_builtin_copy},
-    {"fstat", PH7_builtin_fstat},
-    {"fwrite", PH7_builtin_fwrite},
-    {"fputs", PH7_builtin_fwrite},
-    {"flock", PH7_builtin_flock},
-    {"fclose", PH7_builtin_fclose},
-    {"fopen", PH7_builtin_fopen},
-    {"fpassthru", PH7_builtin_fpassthru},
-    {"fputcsv", PH7_builtin_fputcsv},
-    {"fprintf", PH7_builtin_fprintf},
+    static const ph7_builtin_func aIOFunc[] = {
+        {"ftruncate", PH7_builtin_ftruncate},
+        {"fseek", PH7_builtin_fseek},
+        {"ftell", PH7_builtin_ftell},
+        {"rewind", PH7_builtin_rewind},
+        {"fflush", PH7_builtin_fflush},
+        {"feof", PH7_builtin_feof},
+        {"fgetc", PH7_builtin_fgetc},
+        {"fgets", PH7_builtin_fgets},
+        {"fread", PH7_builtin_fread},
+        {"fgetcsv", PH7_builtin_fgetcsv},
+        {"fgetss", PH7_builtin_fgetss},
+        {"readdir", PH7_builtin_readdir},
+        {"rewinddir", PH7_builtin_rewinddir},
+        {"closedir", PH7_builtin_closedir},
+        {"opendir", PH7_builtin_opendir},
+        {"readfile", PH7_builtin_readfile},
+        {"file_get_contents", PH7_builtin_file_get_contents},
+        {"file_put_contents", PH7_builtin_file_put_contents},
+        {"file", PH7_builtin_file},
+        {"copy", PH7_builtin_copy},
+        {"fstat", PH7_builtin_fstat},
+        {"fwrite", PH7_builtin_fwrite},
+        {"fputs", PH7_builtin_fwrite},
+        {"flock", PH7_builtin_flock},
+        {"fclose", PH7_builtin_fclose},
+        {"fopen", PH7_builtin_fopen},
+        {"fpassthru", PH7_builtin_fpassthru},
+        {"fputcsv", PH7_builtin_fputcsv},
+        {"fprintf", PH7_builtin_fprintf},
 #if !defined(PH7_DISABLE_HASH_FUNC)
-    {"md5_file", PH7_builtin_md5_file},
-    {"sha1_file", PH7_builtin_sha1_file},
+        {"md5_file", PH7_builtin_md5_file},
+        {"sha1_file", PH7_builtin_sha1_file},
 #endif /* PH7_DISABLE_HASH_FUNC */
-    {"parse_ini_file", PH7_builtin_parse_ini_file},
-    {"vfprintf", PH7_builtin_vfprintf}
-};
-const ph7_io_stream* pFileStream = 0;
-sxu32 n = 0;
+        {"parse_ini_file", PH7_builtin_parse_ini_file},
+        {"vfprintf", PH7_builtin_vfprintf}
+    };
+    const ph7_io_stream* pFileStream = 0;
+    sxu32 n = 0;
 /* Register the functions defined above */
-for (n = 0; n < SX_ARRAYSIZE(aVfsFunc); ++n)
-{
-ph7_create_function(&(*pVm), aVfsFunc[n].zName, aVfsFunc[n].xFunc, (void*)pVm->pEngine->pVfs);
-}
-for (n = 0; n < SX_ARRAYSIZE(aIOFunc); ++n)
-{
-ph7_create_function(&(*pVm), aIOFunc[n].zName, aIOFunc[n].xFunc, pVm);
-}
+    for (n = 0; n < SX_ARRAYSIZE(aVfsFunc); ++n)
+    {
+        ph7_create_function(&(*pVm), aVfsFunc[n].zName, aVfsFunc[n].xFunc, (void*)pVm->pEngine->pVfs);
+    }
+    for (n = 0; n < SX_ARRAYSIZE(aIOFunc); ++n)
+    {
+        ph7_create_function(&(*pVm), aIOFunc[n].zName, aIOFunc[n].xFunc, pVm);
+    }
 #ifndef PH7_DISABLE_DISK_IO
 /* Register the file stream if available */
 #ifdef __WINNT__
-pFileStream = &sWinFileStream;
+    pFileStream = &sWinFileStream;
 #elif defined(__UNIXES__)
-pFileStream = &sUnixFileStream;
+    pFileStream = &sUnixFileStream;
 #endif
 /* Install the php:// stream */
-ph7_vm_config(pVm, PH7_VM_CONFIG_IO_STREAM, &sPHP_Stream);
+    ph7_vm_config(pVm, PH7_VM_CONFIG_IO_STREAM, &sPHP_Stream);
 #endif /* PH7_DISABLE_DISK_IO */
-if (pFileStream)
-{
+    if (pFileStream)
+    {
 /* Install the file:// stream */
-ph7_vm_config(pVm, PH7_VM_CONFIG_IO_STREAM, pFileStream);
-}
+        ph7_vm_config(pVm, PH7_VM_CONFIG_IO_STREAM, pFileStream);
+    }
 #else
-SXUNUSED(pVm); /* cc warning */
+    SXUNUSED(pVm); /* cc warning */
 #endif /* PH7_DISABLE_BUILTIN_FUNC */
-return SXRET_OK;
+    return SXRET_OK;
 }
 /*
  * Export the STDIN handle.
