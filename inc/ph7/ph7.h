@@ -46,22 +46,25 @@
 
 #include <stdarg.h> // needed for the definition of va_list.
 
-/*
+/**
  * The PH7_VERSION C preprocessor macroevaluates to a string literal
  * that is the ph7 version in the format "X.Y.Z" where X is the major
- * version number and Y is the minor version number and Z is the release
- * number.
+ * version number and Y is the minor version number and Z is the release number.
  */
+#ifndef PH7_VERSION
 #define PH7_VERSION "2.1.4"
+#endif
 
-/*
+/**
  * The PH7_VERSION_NUMBER C preprocessor macro resolves to an integer
  * with the value (X*1000000 + Y*1000 + Z) where X, Y, and Z are the same
  * numbers used in [PH7_VERSION].
  */
+#ifndef PH7_VERSION_NUMBER
 #define PH7_VERSION_NUMBER 2001004
+#endif
 
-/*
+/**
  * The PH7_SIG C preprocessor macro evaluates to a string
  * literal which is the public signature of the ph7 engine.
  * This signature could be included for example in a host-application
@@ -70,7 +73,7 @@
  */
 #define PH7_SIG "PH7/2.1.4"
 
-/*
+/**
  * PH7 identification in the Symisc source tree:
  * Each particular check-in of a particular software released
  * by symisc systems have an unique identifier associated with it.
@@ -78,7 +81,7 @@
  */
 #define PH7_IDENT "ph7:c193f4d8a6b90ee60f9afad11840f1010054fdf9"
 
-/*
+/**
  * Copyright notice.
  * If you have any questions about the licensing situation,please
  * visit http://ph7.symisc.net/licensing.html
@@ -160,7 +163,8 @@ typedef struct ph7 ph7;
  *     the library will substitute 64-bit integer arithmetic for floating-point which
  *     mean that 25.e-3 and 25 are equals and are of type integer.
  */
-/* Symisc public definitions */
+
+/// Symisc public definitions
 #if !defined(SYMISC_STANDARD_DEFS)
 #define SYMISC_STANDARD_DEFS
 #if defined (_WIN32) || defined (WIN32) || defined(__MINGW32__) || defined (_MSC_VER) || defined (_WIN32_WCE)
@@ -186,9 +190,9 @@ typedef unsigned __int64   sxu64; /* 64 bits(8 bytes) unsigned int64 */
 #else
 typedef signed long long int sxi64; /* 64 bits(8 bytes) signed int64 */
 typedef unsigned long long int sxu64; /* 64 bits(8 bytes) unsigned int64 */
-#endif /* _MSC_VER */
+#endif // _MSC_VER
 
-/* Signature of the consumer routine */
+/** Signature of the consumer routine */
 typedef int (* ProcConsumer)(const void*, unsigned int, void*);
 
 /* Forward reference */
@@ -198,7 +202,10 @@ typedef struct SyString SyString;
 typedef struct syiovec syiovec;
 typedef struct SyMutex SyMutex;
 typedef struct Sytm Sytm;
-/* Scatter and gather array. */
+
+/**
+ * Scatter and gather array.
+ */
 struct syiovec
 {
 #if defined (__WINNT__)
@@ -206,31 +213,63 @@ struct syiovec
     unsigned long nLen;
     char* pBase;
 #else
-    void *pBase;
+    void* pBase;
     unsigned long nLen;
 #endif
 };
+
+/**
+ *
+ */
 struct SyString
 {
-    const char* zString;  // Raw string (may not be null terminated)
-    unsigned int nByte;   // Raw string length
+    /** Raw string (may not be null terminated) */
+    const char* zString;
+
+    /** Raw string length */
+    unsigned int nByte;
 };
-/* Time structure. */
-struct Sytm
+
+/**
+ * Time structure.
+ */
+struct Sytm // todo: rename to SyTime
 {
-    int tm_sec;     // seconds (0 - 60)
-    int tm_min;     // minutes (0 - 59)
-    int tm_hour;    // hours (0 - 23)
-    int tm_mday;    // day of month (1 - 31)
-    int tm_mon;     // month of year (0 - 11)
-    int tm_year;    // year + 1900
-    int tm_wday;    // day of week (Sunday = 0)
-    int tm_yday;    // day of year (0 - 365)
-    int tm_isdst;   // is summer time in effect?
-    char* tm_zone;  // abbreviation of timezone name
-    long tm_gmtoff; // offset from UTC in seconds
+    /** seconds (0 - 60) */
+    int tm_sec;
+
+    /** minutes (0 - 59) */
+    int tm_min;
+
+    /** hours (0 - 23) */
+    int tm_hour;
+
+    /** day of month (1 - 31) */
+    int tm_mday;
+
+    /** month of year (0 - 11) */
+    int tm_mon;
+
+    /** year + 1900 */
+    int tm_year;
+
+    /** day of week (Sunday = 0) */
+    int tm_wday;
+
+    /** day of year (0 - 365) */
+    int tm_yday;
+
+    /** is summer time in effect? */
+    int tm_isdst;
+
+    /** abbreviation of timezone name */
+    char* tm_zone;
+
+    /** offset from UTC in seconds */
+    long tm_gmtoff;
 };
-/* Convert a tm structure (struct tm *) found in <time.h> to a Sytm structure */
+
+/** Convert a tm structure (struct tm *) found in <time.h> to a Sytm structure */
 #define STRUCT_TM_TO_SYTM(pTM, pSYTM) \
     (pSYTM)->tm_hour = (pTM)->tm_hour;\
     (pSYTM)->tm_min     = (pTM)->tm_min;\
@@ -244,7 +283,7 @@ struct Sytm
     (pSYTM)->tm_gmtoff = 0;\
     (pSYTM)->tm_zone = 0;
 
-/* Convert a SYSTEMTIME structure (LPSYSTEMTIME: Windows Systems only ) to a Sytm structure */
+/** Convert a SYSTEMTIME structure (LPSYSTEMTIME: Windows Systems only ) to a Sytm structure */
 #define SYSTEMTIME_TO_SYTM(pSYSTIME, pSYTM) \
      (pSYTM)->tm_hour = (pSYSTIME)->wHour;\
      (pSYTM)->tm_min  = (pSYSTIME)->wMinute;\
@@ -258,99 +297,215 @@ struct Sytm
      (pSYTM)->tm_isdst = -1;\
      (pSYTM)->tm_zone = 0;
 
-/* Dynamic memory allocation methods. */
+/** Dynamic memory allocation methods. */
 struct SyMemMethods
 {
-    void* (* xAlloc)(unsigned int);          // [Required:] Allocate a memory chunk
-    void* (* xRealloc)(void*, unsigned int); // [Required:] Re-allocate a memory chunk
-    void (* xFree)(void*);                   // [Required:] Release a memory chunk
-    unsigned int (* xChunkSize)(void*);      // [Optional:] Return chunk size
-    int (* xInit)(void*);                    // [Optional:] Initialization callback
-    void (* xRelease)(void*);                // [Optional:] Release callback
-    void* pUserData;                         // [Optional:] First argument to xInit() and xRelease()
+    /** [Required:] Allocate a memory chunk */
+    void* (* xAlloc)(unsigned int);
+
+    /** [Required:] Re-allocate a memory chunk */
+    void* (* xRealloc)(void*, unsigned int);
+
+    /** [Required:] Release a memory chunk */
+    void (* xFree)(void*);
+
+    /** [Optional:] Return chunk size */
+    unsigned int (* xChunkSize)(void*);
+
+    /** [Optional:] Initialization callback */
+    int (* xInit)(void*);
+
+    /** [Optional:] Release callback */
+    void (* xRelease)(void*);
+
+    /** [Optional:] First argument to xInit() and xRelease() */
+    void* pUserData;
 };
 
-/* Out of memory callback signature. */
+/** Out of memory callback signature. */
 typedef int (* ProcMemError)(void*);
 
-/* Mutex methods. */
+/** Mutex methods. */
 struct SyMutexMethods
 {
-    int (* xGlobalInit)(void);        // [Optional:] Global mutex initialization
-    void (* xGlobalRelease)(void);    // [Optional:] Global Release callback ()
-    SyMutex* (* xNew)(int);           // [Required:] Request a new mutex
-    void (* xRelease)(SyMutex*);      // [Optional:] Release a mutex
-    void (* xEnter)(SyMutex*);        // [Required:] Enter mutex
-    int (* xTryEnter)(SyMutex*);      // [Optional:] Try to enter a mutex
-    void (* xLeave)(SyMutex*);        // [Required:] Leave a locked mutex
+    /** [Optional:] Global mutex initialization */
+    int (* xGlobalInit)(void);
+
+    /** [Optional:] Global Release callback () */
+    void (* xGlobalRelease)(void);
+
+    /** [Required:] Request a new mutex */
+    SyMutex* (* xNew)(int);
+
+    /** [Optional:] Release a mutex */
+    void (* xRelease)(SyMutex*);
+
+    /** [Required:] Enter mutex */
+    void (* xEnter)(SyMutex*);
+
+    /** [Optional:] Try to enter a mutex */
+    int (* xTryEnter)(SyMutex*);
+
+    /** [Required:] Leave a locked mutex */
+    void (* xLeave)(SyMutex*);
 };
 
 #if defined (_MSC_VER) || defined (__MINGW32__) || defined (__GNUC__) && defined (__declspec)
 #define SX_APIIMPORT    __declspec(dllimport)
 #define SX_APIEXPORT    __declspec(dllexport)
 #else
-#define	SX_APIIMPORT
-#define	SX_APIEXPORT
+#define SX_APIIMPORT
+#define SX_APIEXPORT
 #endif
-/* Standard return values from Symisc public interfaces */
-#define SXRET_OK       0      // Not an error
-#define SXERR_MEM      (-1)   // Out of memory
-#define SXERR_IO       (-2)   // IO error
-#define SXERR_EMPTY    (-3)   // Empty field
-#define SXERR_LOCKED   (-4)   // Locked operation
-#define SXERR_ORANGE   (-5)   // Out of range value
-#define SXERR_NOTFOUND (-6)   // Item not found
-#define SXERR_LIMIT    (-7)   // Limit reached
-#define SXERR_MORE     (-8)   // Need more input
-#define SXERR_INVALID  (-9)   // Invalid parameter
-#define SXERR_ABORT    (-10)  // User callback request an operation abort
-#define SXERR_EXISTS   (-11)  // Item exists
-#define SXERR_SYNTAX   (-12)  // Syntax error
-#define SXERR_UNKNOWN  (-13)  // Unknown error
-#define SXERR_BUSY     (-14)  // Busy operation
-#define SXERR_OVERFLOW (-15)  // Stack or buffer overflow
-#define SXERR_WILLBLOCK (-16) // Operation will block
-#define SXERR_NOTIMPLEMENTED  (-17) // Operation not implemented
-#define SXERR_EOF      (-18) // End of input
-#define SXERR_PERM     (-19) // Permission error
-#define SXERR_NOOP     (-20) // No-op
-#define SXERR_FORMAT   (-21) // Invalid format
-#define SXERR_NEXT     (-22) // Not an error
-#define SXERR_OS       (-23) // System call return an error
-#define SXERR_CORRUPT  (-24) // Corrupted pointer
-#define SXERR_CONTINUE (-25) // Not an error: Operation in progress
-#define SXERR_NOMATCH  (-26) // No match
-#define SXERR_RESET    (-27) // Operation reset
-#define SXERR_DONE     (-28) // Not an error
-#define SXERR_SHORT    (-29) // Buffer too short
-#define SXERR_PATH     (-30) // Path error
-#define SXERR_TIMEOUT  (-31) // Timeout
-#define SXERR_BIG      (-32) // Too big for processing
-#define SXERR_RETRY    (-33) // Retry your call
-#define SXERR_IGNORE   (-63) // Ignore
-#endif /* SYMISC_PUBLIC_DEFS */
-/* Standard PH7 return values */
+
+/// Standard return values from Symisc public interfaces.
+
+/** Not an error */
+#define SXRET_OK       0
+
+/** Out of memory */
+#define SXERR_MEM      (-1)
+
+/** IO error */
+#define SXERR_IO       (-2)
+
+/** Empty field */
+#define SXERR_EMPTY    (-3)
+
+/** Locked operation */
+#define SXERR_LOCKED   (-4)
+
+/** Out of range value */
+#define SXERR_ORANGE   (-5)
+
+/** Item not found */
+#define SXERR_NOTFOUND (-6)
+
+/** Limit reached */
+#define SXERR_LIMIT    (-7)
+
+/** Need more input */
+#define SXERR_MORE     (-8)
+
+/** Invalid parameter */
+#define SXERR_INVALID  (-9)
+
+/** User callback request an operation abort */
+#define SXERR_ABORT    (-10)
+
+/** Item exists */
+#define SXERR_EXISTS   (-11)
+
+/** Syntax error */
+#define SXERR_SYNTAX   (-12)
+
+/** Unknown error */
+#define SXERR_UNKNOWN  (-13)
+
+/** Busy operation */
+#define SXERR_BUSY     (-14)
+
+/** Stack or buffer overflow */
+#define SXERR_OVERFLOW (-15)
+
+/** Operation will block */
+#define SXERR_WILLBLOCK (-16)
+
+/** Operation not implemented */
+#define SXERR_NOTIMPLEMENTED  (-17)
+
+/** End of input */
+#define SXERR_EOF      (-18)
+
+/** Permission error */
+#define SXERR_PERM     (-19)
+
+/** No-op */
+#define SXERR_NOOP     (-20)
+
+/** Invalid format */
+#define SXERR_FORMAT   (-21)
+
+/** Not an error */
+#define SXERR_NEXT     (-22)
+
+/** System call return an error */
+#define SXERR_OS       (-23)
+
+/** Corrupted pointer */
+#define SXERR_CORRUPT  (-24)
+
+/** Not an error: Operation in progress */
+#define SXERR_CONTINUE (-25)
+
+/** No match */
+#define SXERR_NOMATCH  (-26)
+
+/** Operation reset */
+#define SXERR_RESET    (-27)
+
+/** Not an error */
+#define SXERR_DONE     (-28)
+
+/** Buffer too short */
+#define SXERR_SHORT    (-29)
+
+/** Path error */
+#define SXERR_PATH     (-30)
+
+/** Timeout */
+#define SXERR_TIMEOUT  (-31)
+
+/** Too big for processing */
+#define SXERR_BIG      (-32)
+
+/** Retry your call */
+#define SXERR_RETRY    (-33)
+
+/** Ignore */
+#define SXERR_IGNORE   (-63)
+
+#endif // SYMISC_PUBLIC_DEFS
+
+/** Standard PH7 return values */
 #define PH7_OK      SXRET_OK      // Successful result
-/* beginning-of-error-codes */
-#define PH7_NOMEM   SXERR_MEM     // Out of memory
-#define PH7_ABORT   SXERR_ABORT   // Foreign Function request operation abort/Another thread have released this instance
-#define PH7_IO_ERR  SXERR_IO      // IO error
-#define PH7_CORRUPT SXERR_CORRUPT // Corrupt pointer/Unknown configuration option
-#define PH7_LOOKED  SXERR_LOCKED  // Forbidden Operation
-#define PH7_COMPILE_ERR (-70)     // Compilation error
-#define PH7_VM_ERR      (-71)     // Virtual machine error
-/* end-of-error-codes */
-/*
- * If compiling for a processor that lacks floating point
- * support, substitute integer for floating-point.
- */
+
+/// Error codes
+
+/** Out of memory */
+#define PH7_NOMEM SXERR_MEM
+
+/** Foreign Function request operation abort/Another thread have released this instance */
+#define PH7_ABORT SXERR_ABORT
+
+/** IO error */
+#define PH7_IO_ERR SXERR_IO
+
+/** Corrupt pointer/Unknown configuration option */
+#define PH7_CORRUPT SXERR_CORRUPT
+
+/** Forbidden Operation */
+#define PH7_LOOKED SXERR_LOCKED
+
+/** Compilation error */
+#define PH7_COMPILE_ERR (-70)
+
+/** Virtual machine error */
+#define PH7_VM_ERR (-71)
+
+// If compiling for a processor that lacks floating point support, substitute integer for floating-point.
 #ifdef PH7_OMIT_FLOATING_POINT
 typedef sxi64 ph7_real;
 #else
 typedef double ph7_real;
 #endif
+
 typedef sxi64 ph7_int64;
+
 #define PH7_APIEXPORT SX_APIEXPORT
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
 /*
  * Engine Configuration Commands.
  *
@@ -365,9 +520,18 @@ typedef sxi64 ph7_int64;
  * parameters, please refer to this page:
  *      http://ph7.symisc.net/c_api_func.html#ph7_config
  */
-#define PH7_CONFIG_ERR_OUTPUT    1  /* TWO ARGUMENTS: int (*xConsumer)(const void *pOut,unsigned int nLen,void *pUserData),void *pUserData */
-#define PH7_CONFIG_ERR_ABORT     2  /* RESERVED FOR FUTURE USE */
-#define PH7_CONFIG_ERR_LOG       3  /* TWO ARGUMENTS: const char **pzBuf,int *pLen */
+
+/** TWO ARGUMENTS: int (*xConsumer)(const void* pOut, unsigned int nLen, void* pUserData), void* pUserData. */
+#define PH7_CONFIG_ERR_OUTPUT    1
+
+/** RESERVED FOR FUTURE USE. */
+#define PH7_CONFIG_ERR_ABORT     2
+
+/** TWO ARGUMENTS: const char** pzBuf, int* pLen. */
+#define PH7_CONFIG_ERR_LOG       3
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
 /*
  * Virtual Machine Configuration Commands.
  *
@@ -385,26 +549,69 @@ typedef sxi64 ph7_int64;
  * refer to this page:
  *      http://ph7.symisc.net/c_api_func.html#ph7_vm_config
  */
-#define PH7_VM_CONFIG_OUTPUT           1  // TWO ARGUMENTS: int (*xConsumer)(const void *pOut,unsigned int nLen,void *pUserData),void *pUserData
-#define PH7_VM_CONFIG_IMPORT_PATH      3  // ONE ARGUMENT: const char *zIncludePath
-#define PH7_VM_CONFIG_ERR_REPORT       4  // NO ARGUMENTS: Report all run-time errors in the VM output
-#define PH7_VM_CONFIG_RECURSION_DEPTH  5  // ONE ARGUMENT: int nMaxDepth
-#define PH7_VM_OUTPUT_LENGTH           6  // ONE ARGUMENT: unsigned int *pLength
-#define PH7_VM_CONFIG_CREATE_SUPER     7  // TWO ARGUMENTS: const char *zName,ph7_value *pValue
-#define PH7_VM_CONFIG_CREATE_VAR       8  // TWO ARGUMENTS: const char *zName,ph7_value *pValue
-#define PH7_VM_CONFIG_HTTP_REQUEST     9  // TWO ARGUMENTS: const char *zRawRequest,int nRequestLength
-#define PH7_VM_CONFIG_SERVER_ATTR     10  // THREE ARGUMENTS: const char *zKey,const char *zValue,int nLen
-#define PH7_VM_CONFIG_ENV_ATTR        11  // THREE ARGUMENTS: const char *zKey,const char *zValue,int nLen
-#define PH7_VM_CONFIG_SESSION_ATTR    12  // THREE ARGUMENTS: const char *zKey,const char *zValue,int nLen
-#define PH7_VM_CONFIG_POST_ATTR       13  // THREE ARGUMENTS: const char *zKey,const char *zValue,int nLen
-#define PH7_VM_CONFIG_GET_ATTR        14  // THREE ARGUMENTS: const char *zKey,const char *zValue,int nLen
-#define PH7_VM_CONFIG_COOKIE_ATTR     15  // THREE ARGUMENTS: const char *zKey,const char *zValue,int nLen
-#define PH7_VM_CONFIG_HEADER_ATTR     16  // THREE ARGUMENTS: const char *zKey,const char *zValue,int nLen
-#define PH7_VM_CONFIG_EXEC_VALUE      17  // ONE ARGUMENT: ph7_value **ppValue
-#define PH7_VM_CONFIG_IO_STREAM       18  // ONE ARGUMENT: const ph7_io_stream *pStream
-#define PH7_VM_CONFIG_ARGV_ENTRY      19  // ONE ARGUMENT: const char *zValue
-#define PH7_VM_CONFIG_EXTRACT_OUTPUT  20  // TWO ARGUMENTS: const void **ppOut,unsigned int *pOutputLen
-#define PH7_VM_CONFIG_ERR_LOG_HANDLER 21  // ONE ARGUMENT: void (*xErrLog)(const char *,int,const char *,const char *)
+
+/** TWO ARGUMENTS: int (*xConsumer)(const void *pOut,unsigned int nLen,void *pUserData),void *pUserData */
+#define PH7_VM_CONFIG_OUTPUT           1
+
+/** ONE ARGUMENT: const char *zIncludePath */
+#define PH7_VM_CONFIG_IMPORT_PATH      3
+
+/** NO ARGUMENTS: Report all run-time errors in the VM output */
+#define PH7_VM_CONFIG_ERR_REPORT       4
+
+/** ONE ARGUMENT: int nMaxDepth */
+#define PH7_VM_CONFIG_RECURSION_DEPTH  5
+
+/** ONE ARGUMENT: unsigned int *pLength */
+#define PH7_VM_OUTPUT_LENGTH           6
+
+/** TWO ARGUMENTS: const char *zName,ph7_value *pValue */
+#define PH7_VM_CONFIG_CREATE_SUPER     7
+
+/** TWO ARGUMENTS: const char *zName,ph7_value *pValue */
+#define PH7_VM_CONFIG_CREATE_VAR       8
+
+/** TWO ARGUMENTS: const char *zRawRequest,int nRequestLength */
+#define PH7_VM_CONFIG_HTTP_REQUEST     9
+
+/** THREE ARGUMENTS: const char *zKey,const char *zValue,int nLen */
+#define PH7_VM_CONFIG_SERVER_ATTR     10
+
+/** THREE ARGUMENTS: const char *zKey,const char *zValue,int nLen */
+#define PH7_VM_CONFIG_ENV_ATTR        11
+
+/** THREE ARGUMENTS: const char *zKey,const char *zValue,int nLen */
+#define PH7_VM_CONFIG_SESSION_ATTR    12
+
+/** THREE ARGUMENTS: const char *zKey,const char *zValue,int nLen */
+#define PH7_VM_CONFIG_POST_ATTR       13
+
+/** THREE ARGUMENTS: const char *zKey,const char *zValue,int nLen */
+#define PH7_VM_CONFIG_GET_ATTR        14
+
+/** THREE ARGUMENTS: const char *zKey,const char *zValue,int nLen */
+#define PH7_VM_CONFIG_COOKIE_ATTR     15
+
+/** THREE ARGUMENTS: const char *zKey,const char *zValue,int nLen */
+#define PH7_VM_CONFIG_HEADER_ATTR     16
+
+/** ONE ARGUMENT: ph7_value **ppValue */
+#define PH7_VM_CONFIG_EXEC_VALUE      17
+
+/** ONE ARGUMENT: const ph7_io_stream *pStream */
+#define PH7_VM_CONFIG_IO_STREAM       18
+
+/** ONE ARGUMENT: const char *zValue */
+#define PH7_VM_CONFIG_ARGV_ENTRY      19
+
+/** TWO ARGUMENTS: const void **ppOut,unsigned int *pOutputLen */
+#define PH7_VM_CONFIG_EXTRACT_OUTPUT  20
+
+/** ONE ARGUMENT: void (*xErrLog)(const char *,int,const char *,const char *) */
+#define PH7_VM_CONFIG_ERR_LOG_HANDLER 21
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
 /*
  * Global Library Configuration Commands.
  *
@@ -431,26 +638,39 @@ typedef sxi64 ph7_int64;
  * refer to this page:
  *      http://ph7.symisc.net/c_api_func.html#Global_Library_Management_Interfaces
  */
+
 #define PH7_LIB_CONFIG_USER_MALLOC            1 /* ONE ARGUMENT: const SyMemMethods *pMemMethods */
 #define PH7_LIB_CONFIG_MEM_ERR_CALLBACK       2 /* TWO ARGUMENTS: int (*xMemError)(void *),void *pUserData */
 #define PH7_LIB_CONFIG_USER_MUTEX             3 /* ONE ARGUMENT: const SyMutexMethods *pMutexMethods */
 #define PH7_LIB_CONFIG_THREAD_LEVEL_SINGLE    4 /* NO ARGUMENTS */
 #define PH7_LIB_CONFIG_THREAD_LEVEL_MULTI     5 /* NO ARGUMENTS */
 #define PH7_LIB_CONFIG_VFS                    6 /* ONE ARGUMENT: const ph7_vfs *pVfs */
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
 /*
  * Compile-time flags.
+ *
  * The new compile interfaces [ph7_compile_v2()] and [ph7_compile_file()] takes
  * as their last argument zero or more combination of compile time flags.
  * These flags are used to control the behavior of the PH7 compiler while
  * processing the input.
  * Refer to the official documentation for additional information.
  */
-#define PH7_PHP_ONLY 0x01 /* If this flag is set then the code to compile is assumed
-                           * to be plain PHP only. That is, there is no need to delimit
-						   * the PHP code using the standard tags such as <?php ?> or <? ?>.
-						   * Everything will pass through the PH7 compiler.
-						   */
-#define PH7_PHP_EXPR 0x02 /* This flag is reserved for future use. */
+
+/**
+ * If this flag is set then the code to compile is assumed
+ * to be plain PHP only. That is, there is no need to delimit
+ * the PHP code using the standard tags such as <?php ?> or <? ?>.
+ * Everything will pass through the PH7 compiler.
+ */
+#define PH7_PHP_ONLY 0x01
+
+/** This flag is reserved for future use. */
+#define PH7_PHP_EXPR 0x02
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
 /*
  * Call Context Error Message Serverity Level.
  *
@@ -459,13 +679,20 @@ typedef sxi64 ph7_int64;
  * [ph7_context_throw_error_format()] interfaces.
  * Refer to the official documentation for additional information.
  */
-#define PH7_CTX_ERR      1 // Call context error such as unexpected number of arguments,invalid types and so on.
-#define PH7_CTX_WARNING  2 // Call context Warning
-#define PH7_CTX_NOTICE   3 // Call context Notice
-/* Current VFS structure version*/
+
+/** Call context error such as unexpected number of arguments,invalid types and so on. */
+#define PH7_CTX_ERR      1
+
+/** Call context Warning. */
+#define PH7_CTX_WARNING  2
+
+/** Call context Notice. */
+#define PH7_CTX_NOTICE   3
+
+/** Current VFS structure version. */
 #define PH7_VFS_VERSION 2
 
-/* 
+/**
  * PH7 Virtual File System (VFS).
  *
  * An instance of the ph7_vfs object defines the interface between the PH7 core
@@ -490,72 +717,181 @@ typedef sxi64 ph7_int64;
  */
 struct ph7_vfs
 {
-    const char* zName;  // Underlying VFS name [i.e: FreeBSD/Linux/Windows...]
-    int iVersion;       // Current VFS structure version [default 2]
-    /* Directory functions */
-    int (* xChdir)(const char*);                          // Change directory
-    int (* xChroot)(const char*);                         // Change the root directory
-    int (* xGetcwd)(ph7_context*);                        // Get the current working directory
-    int (* xMkdir)(const char*, int, int);                // Make directory
-    int (* xRmdir)(const char*);                          // Remove directory
-    int (* xIsdir)(const char*);                          // Tells whether the filename is a directory
-    int (* xRename)(const char*, const char*);            // Renames a file or directory
-    int (* xRealpath)(const char*, ph7_context*);         // Return canonicalized absolute pathnam
-    // Systems functions
-    int (* xSleep)(unsigned int);                         // Delay execution in microseconds
-    int (* xUnlink)(const char*);                         // Deletes a file
-    int (* xFileExists)(const char*);                     // Checks whether a file or directory exists
-    int (* xChmod)(const char*, int);                     // Changes file mode
-    int (* xChown)(const char*, const char*);             // Changes file owner
-    int (* xChgrp)(const char*, const char*);             // Changes file group
-    ph7_int64 (* xFreeSpace)(const char*);                // Available space on filesystem or disk partition
-    ph7_int64 (* xTotalSpace)(const char*);               // Total space on filesystem or disk partition
-    ph7_int64 (* xFileSize)(const char*);                 // Gets file size
-    ph7_int64 (* xFileAtime)(const char*);                // Gets last access time of file
-    ph7_int64 (* xFileMtime)(const char*);                // Gets file modification time
-    ph7_int64 (* xFileCtime)(const char*);                // Gets inode change time of file
-    int (* xStat)(const char*, ph7_value*, ph7_value*);   // Gives information about a file
-    int (* xlStat)(const char*, ph7_value*, ph7_value*);  // Gives information about a file
-    int (* xIsfile)(const char*);                         // Tells whether the filename is a regular file
-    int (* xIslink)(const char*);                         // Tells whether the filename is a symbolic link
-    int (* xReadable)(const char*);                       // Tells whether a file exists and is readable
-    int (* xWritable)(const char*);                       // Tells whether the filename is writable
-    int (* xExecutable)(const char*);                     // Tells whether the filename is executable
-    int (* xFiletype)(const char*, ph7_context*);         // Gets file type [i.e: fifo,dir,file..]
-    int (* xGetenv)(const char*, ph7_context*);           // Gets the value of an environment variable
-    int (* xSetenv)(const char*, const char*);            // Sets the value of an environment variable
-    int (* xTouch)(const char*, ph7_int64, ph7_int64);    // Sets access and modification time of file
-    int (* xMmap)(const char*, void**, ph7_int64*);       // Read-only memory map of the whole file
-    void (* xUnmap)(void*, ph7_int64);                    // Unmap a memory view
-    int (* xLink)(const char*, const char*, int);         // Create hard or symbolic link
-    int (* xUmask)(int);                                  // Change the current umask
-    void (* xTempDir)(ph7_context*);                      // Get path of the temporary directory
-    unsigned int (* xProcessId)(void);                    // Get running process ID
-    int (* xUid)(void);                                   // user ID of the process
-    int (* xGid)(void);                                   // group ID of the process
-    void (* xUsername)(ph7_context*);                     // Running username
-    int (* xExec)(const char*, ph7_context*);             // Execute an external program
+    /** Underlying VFS name [i.e: FreeBSD/Linux/Windows...] */
+    const char* zName;
+
+    /** Current VFS structure version [default 2] */
+    int iVersion;
+
+    /// Directory functions
+
+    /** Change directory */
+    int (* xChdir)(const char*);
+
+    /** Change the root directory */
+    int (* xChroot)(const char*);
+
+    /** Get the current working directory */
+    int (* xGetcwd)(ph7_context*);
+
+    /** Make directory */
+    int (* xMkdir)(const char*, int, int);
+
+    /** Remove directory */
+    int (* xRmdir)(const char*);
+
+    /** Tells whether the filename is a directory */
+    int (* xIsdir)(const char*);
+
+    /** Renames a file or directory */
+    int (* xRename)(const char*, const char*);
+
+    /** Return canonicalized absolute path name */
+    int (* xRealpath)(const char*, ph7_context*);
+
+    /// Systems functions
+
+    /** Delay execution in microseconds */
+    int (* xSleep)(unsigned int);
+
+    /** Deletes a file */
+    int (* xUnlink)(const char*);
+
+    /** Checks whether a file or directory exists */
+    int (* xFileExists)(const char*);
+
+    /** Changes file mode */
+    int (* xChmod)(const char*, int);
+
+    /** Changes file owner */
+    int (* xChown)(const char*, const char*);
+
+    /** Changes file group */
+    int (* xChgrp)(const char*, const char*);
+
+    /** Available space on filesystem or disk partition */
+    ph7_int64 (* xFreeSpace)(const char*);
+
+    /** Total space on filesystem or disk partition */
+    ph7_int64 (* xTotalSpace)(const char*);
+
+    /** Gets file size */
+    ph7_int64 (* xFileSize)(const char*);
+
+    /** Gets last access time of file */
+    ph7_int64 (* xFileAtime)(const char*);
+
+    /** Gets file modification time */
+    ph7_int64 (* xFileMtime)(const char*);
+
+    /** Gets inode change time of file */
+    ph7_int64 (* xFileCtime)(const char*);
+
+    /** Gives information about a file */
+    int (* xStat)(const char*, ph7_value*, ph7_value*);
+
+    /** Gives information about a file */
+    int (* xlStat)(const char*, ph7_value*, ph7_value*);
+
+    /** Tells whether the filename is a regular file */
+    int (* xIsfile)(const char*);
+
+    /** Tells whether the filename is a symbolic link */
+    int (* xIslink)(const char*);
+
+    /** Tells whether a file exists and is readable */
+    int (* xReadable)(const char*);
+
+    /** Tells whether the filename is writable */
+    int (* xWritable)(const char*);
+
+    /** Tells whether the filename is executable */
+    int (* xExecutable)(const char*);
+
+    /** Gets file type [i.e: fifo,dir,file..] */
+    int (* xFiletype)(const char*, ph7_context*);
+
+    /** Gets the value of an environment variable */
+    int (* xGetenv)(const char*, ph7_context*);
+
+    /** Sets the value of an environment variable */
+    int (* xSetenv)(const char*, const char*);
+
+    /** Sets access and modification time of file */
+    int (* xTouch)(const char*, ph7_int64, ph7_int64);
+
+    /** Read-only memory map of the whole file */
+    int (* xMmap)(const char*, void**, ph7_int64*);
+
+    /** Unmap a memory view */
+    void (* xUnmap)(void*, ph7_int64);
+
+    /** Create hard or symbolic link */
+    int (* xLink)(const char*, const char*, int);
+
+    /** Change the current umask */
+    int (* xUmask)(int);
+
+    /** Get path of the temporary directory */
+    void (* xTempDir)(ph7_context*);
+
+    /** Get running process ID */
+    unsigned int (* xProcessId)(void);
+
+    /** user ID of the process */
+    int (* xUid)(void);
+
+    /** group ID of the process */
+    int (* xGid)(void);
+
+    /** Running username */
+    void (* xUsername)(ph7_context*);
+
+    /** Execute an external program */
+    int (* xExec)(const char*, ph7_context*);
 };
-/* Current PH7 IO stream structure version. */
+
+/** Current PH7 IO stream structure version. */
 #define PH7_IO_STREAM_VERSION 1
+
 /* 
  * Possible open mode flags that can be passed to the xOpen() routine
  * of the underlying IO stream device .
  * Refer to the PH7 IO Stream C/C++ specification manual (http://ph7.symisc.net/io_stream_spec.html)
  * for additional information.
  */
-#define PH7_IO_OPEN_RDONLY   0x001  /* Read-only open */
-#define PH7_IO_OPEN_WRONLY   0x002  /* Write-only open */
-#define PH7_IO_OPEN_RDWR     0x004  /* Read-write open. */
-#define PH7_IO_OPEN_CREATE   0x008  /* If the file does not exist it will be created */
-#define PH7_IO_OPEN_TRUNC    0x010  /* Truncate the file to zero length */
-#define PH7_IO_OPEN_APPEND   0x020  /* Append mode.The file offset is positioned at the end of the file */
-#define PH7_IO_OPEN_EXCL     0x040  /* Ensure that this call creates the file,the file must not exist before */
-#define PH7_IO_OPEN_BINARY   0x080  /* Simple hint: Data is binary */
-#define PH7_IO_OPEN_TEMP     0x100  /* Simple hint: Temporary file */
-#define PH7_IO_OPEN_TEXT     0x200  /* Simple hint: Data is textual */
 
-/*
+/** Read-only open */
+#define PH7_IO_OPEN_RDONLY   0x001
+
+/** Write-only open */
+#define PH7_IO_OPEN_WRONLY   0x002
+
+/** Read-write open. */
+#define PH7_IO_OPEN_RDWR     0x004
+
+/** If the file does not exist it will be created */
+#define PH7_IO_OPEN_CREATE   0x008
+
+/** Truncate the file to zero length */
+#define PH7_IO_OPEN_TRUNC    0x010
+
+/** Append mode.The file offset is positioned at the end of the file */
+#define PH7_IO_OPEN_APPEND   0x020
+
+/** Ensure that this call creates the file,the file must not exist before */
+#define PH7_IO_OPEN_EXCL     0x040
+
+/** Simple hint: Data is binary */
+#define PH7_IO_OPEN_BINARY   0x080
+
+/** Simple hint: Temporary file */
+#define PH7_IO_OPEN_TEMP     0x100
+
+/** Simple hint: Data is textual */
+#define PH7_IO_OPEN_TEXT     0x200
+
+/**
  * PH7 IO Stream Device.
  *
  * An instance of the ph7_io_stream object defines the interface between the PH7 core
@@ -586,41 +922,88 @@ struct ph7_vfs
  */
 struct ph7_io_stream
 {
-    const char* zName;                                     // Underlying stream name [i.e: file/http/zip/php,..]
-    int iVersion;                                          // IO stream structure version [default 1
-    int (* xOpen)(const char*, int, ph7_value*, void**);   // Open handl
-    int (* xOpenDir)(const char*, ph7_value*, void**);     // Open directory handle
-    void (* xClose)(void*);                                // Close file handle
-    void (* xCloseDir)(void*);                             // Close directory handle
-    ph7_int64 (* xRead)(void*, void*, ph7_int64);          // Read from the open stream
-    int (* xReadDir)(void*, ph7_context*);                 // Read entry from directory handle
-    ph7_int64 (* xWrite)(void*, const void*, ph7_int64);   // Write to the open stream
-    int (* xSeek)(void*, ph7_int64, int);                  // Seek on the open stream
-    int (* xLock)(void*, int);                             // Lock/Unlock the open stream
-    void (* xRewindDir)(void*);                            // Rewind directory handle
-    ph7_int64 (* xTell)(void*);                            // Current position of the stream  read/write pointer
-    int (* xTrunc)(void*, ph7_int64);                      // Truncates the open stream to a given length
-    int (* xSync)(void*);                                  // Flush open stream data
-    int (* xStat)(void*, ph7_value*, ph7_value*);          // Stat an open stream handle
+    /** Underlying stream name [i.e: file/http/zip/php,..] */
+    const char* zName;
+
+    /** IO stream structure version [default 1 */
+    int iVersion;
+
+    /** Open handle */
+    int (* xOpen)(const char*, int, ph7_value*, void**);
+
+    /** Open directory handle */
+    int (* xOpenDir)(const char*, ph7_value*, void**);
+
+    /** Close file handle */
+    void (* xClose)(void*);
+
+    /** Close directory handle */
+    void (* xCloseDir)(void*);
+
+    /** Read from the open stream */
+    ph7_int64 (* xRead)(void*, void*, ph7_int64);
+
+    /** Read entry from directory handle */
+    int (* xReadDir)(void*, ph7_context*);
+
+    /** Write to the open stream */
+    ph7_int64 (* xWrite)(void*, const void*, ph7_int64);
+
+    /** Seek on the open stream */
+    int (* xSeek)(void*, ph7_int64, int);
+
+    /** Lock/Unlock the open stream */
+    int (* xLock)(void*, int);
+
+    /** Rewind directory handle */
+    void (* xRewindDir)(void*);
+
+    /** Current position of the stream  read/write pointer */
+    ph7_int64 (* xTell)(void*);
+
+    /** Truncates the open stream to a given length */
+    int (* xTrunc)(void*, ph7_int64);
+
+    /** Flush open stream data */
+    int (* xSync)(void*);
+
+    /** Stat an open stream handle */
+    int (* xStat)(void*, ph7_value*, ph7_value*);
 };
 
-// C-API-REF: Please refer to the official documentation for interfaces purpose and expected parameters.
+/// C-API-REF: Please refer to the official documentation for interfaces purpose and expected parameters.
 
-// Engine Handling Interfaces
+/// Engine Handling Interfaces
+
 PH7_APIEXPORT int ph7_init(ph7** ppEngine);
 
 PH7_APIEXPORT int ph7_config(ph7* pEngine, int nConfigOp, ...);
 
 PH7_APIEXPORT int ph7_release(ph7* pEngine);
 
-/* Compile Interfaces */
-PH7_APIEXPORT int ph7_compile(ph7* pEngine, const char* zSource, int nLen, ph7_vm** ppOutVm);
+/// Compile Interfaces
 
-PH7_APIEXPORT int ph7_compile_v2(ph7* pEngine, const char* zSource, int nLen, ph7_vm** ppOutVm, int iFlags);
+PH7_APIEXPORT int ph7_compile(
+    ph7* pEngine,
+    const char* zSource,
+    int nLen,
+    ph7_vm** ppOutVm);
 
-PH7_APIEXPORT int ph7_compile_file(ph7* pEngine, const char* zFilePath, ph7_vm** ppOutVm, int iFlags);
+PH7_APIEXPORT int ph7_compile_v2(
+    ph7* pEngine,
+    const char* zSource,
+    int nLen,
+    ph7_vm** ppOutVm,
+    int iFlags);
 
-/* Virtual Machine Handling Interfaces */
+PH7_APIEXPORT int ph7_compile_file(
+    ph7* pEngine,
+    const char* zFilePath,
+    ph7_vm** ppOutVm,
+    int iFlags);
+
+/// Virtual Machine Handling Interfaces
+
 PH7_APIEXPORT int ph7_vm_config(ph7_vm* pVm, int iConfigOp, ...);
 
 PH7_APIEXPORT int ph7_vm_exec(ph7_vm* pVm, int* pExitStatus);
@@ -634,7 +1017,8 @@ PH7_APIEXPORT int ph7_vm_dump_v2(
     int (* xConsumer)(const void*, unsigned int, void*),
     void* pUserData);
 
-/* In-process Extending Interfaces */
+/// In-process Extending Interfaces
+
 PH7_APIEXPORT int ph7_create_function(
     ph7_vm* pVm,
     const char* zName,
@@ -651,7 +1035,8 @@ PH7_APIEXPORT int ph7_create_constant(
 
 PH7_APIEXPORT int ph7_delete_constant(ph7_vm* pVm, const char* zName);
 
-/* Foreign Function Parameter Values */
+/// Foreign Function Parameter Values
+
 PH7_APIEXPORT int ph7_value_to_int(ph7_value* pValue);
 
 PH7_APIEXPORT int ph7_value_to_bool(ph7_value* pValue);
@@ -666,7 +1051,8 @@ PH7_APIEXPORT void* ph7_value_to_resource(ph7_value* pValue);
 
 PH7_APIEXPORT int ph7_value_compare(ph7_value* pLeft, ph7_value* pRight, int bStrict);
 
-/* Setting The Result Of A Foreign Function */
+/// Setting The Result Of A Foreign Function
+
 PH7_APIEXPORT int ph7_result_int(ph7_context* pCtx, int iValue);
 
 PH7_APIEXPORT int ph7_result_int64(ph7_context* pCtx, ph7_int64 iValue);
@@ -685,7 +1071,8 @@ PH7_APIEXPORT int ph7_result_value(ph7_context* pCtx, ph7_value* pValue);
 
 PH7_APIEXPORT int ph7_result_resource(ph7_context* pCtx, void* pUserData);
 
-/* Call Context Handling Interfaces */
+/// Call Context Handling Interfaces
+
 PH7_APIEXPORT int ph7_context_output(ph7_context* pCtx, const char* zString, int nLen);
 
 PH7_APIEXPORT int ph7_context_output_format(ph7_context* pCtx, const char* zFormat, ...);
@@ -710,14 +1097,23 @@ PH7_APIEXPORT unsigned int ph7_context_result_buf_length(ph7_context* pCtx);
 
 PH7_APIEXPORT const char* ph7_function_name(ph7_context* pCtx);
 
-/* Call Context Memory Management Interfaces */
-PH7_APIEXPORT void* ph7_context_alloc_chunk(ph7_context* pCtx, unsigned int nByte, int ZeroChunk, int AutoRelease);
+/// Call Context Memory Management Interfaces
 
-PH7_APIEXPORT void* ph7_context_realloc_chunk(ph7_context* pCtx, void* pChunk, unsigned int nByte);
+PH7_APIEXPORT void* ph7_context_alloc_chunk(
+    ph7_context* pCtx,
+    unsigned int nByte,
+    int ZeroChunk,
+    int AutoRelease);
+
+PH7_APIEXPORT void* ph7_context_realloc_chunk(
+    ph7_context* pCtx,
+    void* pChunk,
+    unsigned int nByte);
 
 PH7_APIEXPORT void ph7_context_free_chunk(ph7_context* pCtx, void* pChunk);
 
-/* On Demand Dynamically Typed Value Object allocation interfaces */
+/// On Demand Dynamically Typed Value Object allocation interfaces
+
 PH7_APIEXPORT ph7_value* ph7_new_scalar(ph7_vm* pVm);
 
 PH7_APIEXPORT ph7_value* ph7_new_array(ph7_vm* pVm);
@@ -730,7 +1126,8 @@ PH7_APIEXPORT ph7_value* ph7_context_new_array(ph7_context* pCtx);
 
 PH7_APIEXPORT void ph7_context_release_value(ph7_context* pCtx, ph7_value* pValue);
 
-/* Dynamically Typed Value Object Management Interfaces */
+/// Dynamically Typed Value Object Management Interfaces
+
 PH7_APIEXPORT int ph7_value_int(ph7_value* pVal, int iValue);
 
 PH7_APIEXPORT int ph7_value_int64(ph7_value* pVal, ph7_int64 iValue);
@@ -753,7 +1150,10 @@ PH7_APIEXPORT int ph7_value_release(ph7_value* pVal);
 
 PH7_APIEXPORT ph7_value* ph7_array_fetch(ph7_value* pArray, const char* zKey, int nByte);
 
-PH7_APIEXPORT int ph7_array_walk(ph7_value* pArray, int (* xWalk)(ph7_value*, ph7_value*, void*), void* pUserData);
+PH7_APIEXPORT int ph7_array_walk(
+    ph7_value* pArray,
+    int (* xWalk)(ph7_value*, ph7_value*, void*),
+    void* pUserData);
 
 PH7_APIEXPORT int ph7_array_add_elem(ph7_value* pArray, ph7_value* pKey, ph7_value* pValue);
 
@@ -763,7 +1163,10 @@ PH7_APIEXPORT int ph7_array_add_intkey_elem(ph7_value* pArray, int iKey, ph7_val
 
 PH7_APIEXPORT unsigned int ph7_array_count(ph7_value* pArray);
 
-PH7_APIEXPORT int ph7_object_walk(ph7_value* pObject, int (* xWalk)(const char*, ph7_value*, void*), void* pUserData);
+PH7_APIEXPORT int ph7_object_walk(
+    ph7_value* pObject,
+    int (* xWalk)(const char*, ph7_value*, void*),
+    void* pUserData);
 
 PH7_APIEXPORT ph7_value* ph7_object_fetch_attr(ph7_value* pObject, const char* zAttr);
 
@@ -793,7 +1196,8 @@ PH7_APIEXPORT int ph7_value_is_resource(ph7_value* pVal);
 
 PH7_APIEXPORT int ph7_value_is_empty(ph7_value* pVal);
 
-/* Global Library Management Interfaces */
+/// Global Library Management Interfaces
+
 PH7_APIEXPORT int ph7_lib_init(void);
 
 PH7_APIEXPORT int ph7_lib_config(int nConfigOp, ...);
@@ -812,4 +1216,4 @@ PH7_APIEXPORT const char* ph7_lib_copyright(void);
 
 #ifdef __cplusplus
 }
-#endif // __cplusplus
+#endif
