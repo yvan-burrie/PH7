@@ -64,18 +64,18 @@ typedef struct ph7_hashmap ph7_hashmap;
 typedef struct ph7_class ph7_class;
 
 /// Symisc Standard types
-#if !defined(SYMISC_STD_TYPES)
+#ifndef SYMISC_STD_TYPES
 
 #define SYMISC_STD_TYPES
 #ifdef __WINNT__
 
 /* Disable nuisance warnings on Borland compilers */
-#if defined(__BORLANDC__)
-#pragma warn -rch /* unreachable code */
-#pragma warn -ccc /* Condition is always true or false */
-#pragma warn -aus /* Assigned value is never used */
-#pragma warn -csu /* Comparing signed and unsigned */
-#pragma warn -spa /* Suspicious pointer arithmetic */
+#ifdef __BORLANDC__
+#pragma warn -rch // unreachable code
+#pragma warn -ccc // Condition is always true or false
+#pragma warn -aus // Assigned value is never used
+#pragma warn -csu // Comparing signed and unsigned
+#pragma warn -spa // Suspicious pointer arithmetic
 #endif
 
 #endif // SYMISC_STD_TYPES
@@ -95,27 +95,25 @@ typedef sxi64 sxofft64;
 typedef long double sxlongreal;
 typedef double sxreal;
 
-#define SXI8_HIGH       0x7F
-#define SXU8_HIGH       0xFFu
-#define SXI16_HIGH      0x7FFF
-#define SXU16_HIGH      0xFFFFu
-#define SXI32_HIGH      0x7FFFFFFF
-#define SXU32_HIGH      0xFFFFFFFFu
-#define SXI64_HIGH      0x7FFFFFFFFFFFFFFF
-#define SXU64_HIGH      0xFFFFFFFFFFFFFFFFu
+#define SXI8_HIGH    0x7F
+#define SXU8_HIGH    0xFFu
+#define SXI16_HIGH   0x7FFF
+#define SXU16_HIGH   0xFFFFu
+#define SXI32_HIGH   0x7FFFFFFF
+#define SXU32_HIGH   0xFFFFFFFFu
+#define SXI64_HIGH   0x7FFFFFFFFFFFFFFF
+#define SXU64_HIGH   0xFFFFFFFFFFFFFFFFu
 
-#if !defined(TRUE)
+#ifndef TRUE
 #define TRUE 1
 #endif
-#if !defined(FALSE)
+#ifndef FALSE
 #define FALSE 0
 #endif
 
-/*
- * The following macros are used to cast pointers to integers and
- * integers to pointers.
- */
-#if defined(__PTRDIFF_TYPE__)
+/// The following macros are used to cast pointers to integers and integers to pointers.
+
+#ifdef __PTRDIFF_TYPE__
 # define SX_INT_TO_PTR(X)  ((void*)(__PTRDIFF_TYPE__)(X))
 # define SX_PTR_TO_INT(X)  ((int)(__PTRDIFF_TYPE__)(X))
 #elif !defined(__GNUC__)
@@ -125,9 +123,11 @@ typedef double sxreal;
 # define SX_INT_TO_PTR(X)  ((void*)(X))
 # define SX_PTR_TO_INT(X)  ((int)(X))
 #endif
-#define SXMIN(a, b)  ((a < b) ? (a) : (b))
-#define SXMAX(a, b)  ((a < b) ? (b) : (a))
-#endif /* SYMISC_STD_TYPES */
+
+#define SXMIN(a, b) ((a < b) ? (a) : (b))
+#define SXMAX(a, b) ((a < b) ? (b) : (a))
+
+#endif // SYMISC_STD_TYPES
 
 /// Symisc Run-time API private definitions
 
@@ -511,13 +511,17 @@ typedef struct SyHash
 
 } SyHash;
 
-#define SXHASH_BUCKET_SIZE 16 /* Initial bucket size: must be a power of two */
+/** Initial bucket size: must be a power of two */
+#define SXHASH_BUCKET_SIZE 16
+
 #define SXHASH_FILL_FACTOR 3
-/* Hash access macro */
+
+/// Hash access macros
+
 #define SyHashFunc(HASH)        ((HASH)->xHash)
-#define SyHashCmpFunc(HASH)        ((HASH)->xCmp)
-#define SyHashTotalEntry(HASH)    ((HASH)->nEntry)
-#define SyHashGetPool(HASH)        ((HASH)->pAllocator)
+#define SyHashCmpFunc(HASH)     ((HASH)->xCmp)
+#define SyHashTotalEntry(HASH)  ((HASH)->nEntry)
+#define SyHashGetPool(HASH)     ((HASH)->pAllocator)
 
 /**
  * An instance of the following structure define a single context
@@ -631,7 +635,8 @@ struct SyLex
 #define SyLexTotalLines(LEX)    ((LEX)->sStream.nLine)
 #define SyLexTotalIgnored(LEX)  ((LEX)->sStream.nIgn)
 #define XLEX_IN_LEN(STREAM)     (sxu32)(STREAM->zEnd - STREAM->zText)
-#endif /* SYMISC_PRIVATE_AUX_DEFS */
+
+#endif // SYMISC_PRIVATE_AUX_DEFS
 
 /*
  * Notes on UTF-8 (According to SQLite3 authors):
@@ -649,7 +654,7 @@ struct SyLex
  * advance zIn to point to the first byte of the next UTF-8 character.
  */
 #define SX_JMP_UTF8(zIn, zEnd) \
-    while(zIn < zEnd && (((unsigned char)zIn[0] & 0xC0u) == 0x80)) { zIn++; }
+    while (zIn < zEnd && (((unsigned char)zIn[0] & 0xC0u) == 0x80)) { zIn++; }
 
 #define SX_WRITE_UTF8(zOut, c) {                         \
     if (c < 0x00080) {                                   \
@@ -1429,7 +1434,7 @@ struct ph7
     /** Configuration */
     ph7_conf xConf;
 
-#if defined(PH7_ENABLE_THREADS)
+#ifdef PH7_ENABLE_THREADS
 
     /** Mutex methods */
     const SyMutexMethods* pMethods;
@@ -2115,9 +2120,11 @@ struct ph7_vm
     /** Memory backend */
     SyMemBackend sAllocator;
 
-#if defined(PH7_ENABLE_THREADS)
+#ifdef PH7_ENABLE_THREADS
+
     /** Recursive mutex associated with VM. */
     SyMutex* pMutex;
+
 #endif
 
     /** Interpreter that own this VM */
